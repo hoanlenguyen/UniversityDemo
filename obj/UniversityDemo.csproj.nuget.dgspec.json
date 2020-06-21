@@ -10,14 +10,11 @@
         "projectUniqueName": "D:\\.Net\\UniversityDemo\\UniversityDemo.csproj",
         "projectName": "UniversityDemo",
         "projectPath": "D:\\.Net\\UniversityDemo\\UniversityDemo.csproj",
-        "packagesPath": "C:\\Users\\Hoan\\.nuget\\packages\\",
+        "packagesPath": "C:\\Users\\lengu\\.nuget\\packages\\",
         "outputPath": "D:\\.Net\\UniversityDemo\\obj\\",
         "projectStyle": "PackageReference",
-        "fallbackFolders": [
-          "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
-        ],
         "configFilePaths": [
-          "C:\\Users\\Hoan\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\lengu\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
@@ -25,9 +22,7 @@
         ],
         "sources": {
           "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-          "D:\\Gannha\\nugets": {},
-          "https://api.nuget.org/v3/index.json": {},
-          "https://pkgs.dev.azure.com/25inc/_packaging/gnnuget/nuget/v3/index.json": {}
+          "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
           "netcoreapp3.1": {
@@ -43,6 +38,10 @@
       "frameworks": {
         "netcoreapp3.1": {
           "dependencies": {
+            "Microsoft.AspNetCore.Mvc.NewtonsoftJson": {
+              "target": "Package",
+              "version": "[3.1.5, )"
+            },
             "Microsoft.EntityFrameworkCore": {
               "target": "Package",
               "version": "[3.1.5, )"
@@ -55,9 +54,23 @@
               "target": "Package",
               "version": "[3.1.5, )"
             },
+            "Microsoft.EntityFrameworkCore.Tools": {
+              "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[3.1.5, )"
+            },
+            "Microsoft.VisualStudio.Web.CodeGeneration.Design": {
+              "target": "Package",
+              "version": "[3.1.3, )"
+            },
             "Swashbuckle.AspNetCore": {
               "target": "Package",
               "version": "[5.0.0, )"
+            },
+            "System.Text.Json": {
+              "target": "Package",
+              "version": "[4.7.2, )"
             }
           },
           "imports": [
