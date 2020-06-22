@@ -19,6 +19,16 @@ namespace UniversityDemo.Data
             modelBuilder.Entity<Course>().ToTable("Course");
             modelBuilder.Entity<Enrollment>().ToTable("Enrollment");
             modelBuilder.Entity<Student>().ToTable("Student");
+
+            modelBuilder.Entity<Enrollment>()
+                .HasOne(q => q.Student)
+                .WithMany(p => p.Enrollments)
+                .HasForeignKey(e => e.StudentID).OnDelete(DeleteBehavior.NoAction);
+
+            modelBuilder.Entity<Enrollment>()
+               .HasOne(q => q.Course)
+               .WithMany(p => p.Enrollments)
+               .HasForeignKey(e => e.CourseID).OnDelete(DeleteBehavior.NoAction);
         }
     }
 }

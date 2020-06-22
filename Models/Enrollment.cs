@@ -1,4 +1,6 @@
-﻿namespace UniversityDemo.Models
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace UniversityDemo.Models
 {
     public enum Grade
     {
@@ -12,7 +14,15 @@
         public int StudentID { get; set; }
         public Grade? Grade { get; set; }
 
-        //public virtual Course Course { get; set; }
-        //public virtual Student Student { get; set; }
+        #region reference
+
+        [ForeignKey(nameof(CourseID))]
+        public virtual Course Course { get; set; }
+
+        [ForeignKey(nameof(StudentID))]
+        public virtual Student Student { get; set; }
+
+        #endregion
+
     }
 }

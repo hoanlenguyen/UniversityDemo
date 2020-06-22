@@ -1,4 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using UniversityDemo.Models;
 using UniversityDemo.Service;
 
 namespace UniversityDemo.Controllers
@@ -14,25 +17,34 @@ namespace UniversityDemo.Controllers
             this.studentsService = studentsService;
         }
 
-        //private readonly StudentsService studentsService;
-
-        //public StudentsController(StudentsService studentsService)
-        //{
-        //    this.studentsService = studentsService;
-        //}
-
+        
         [HttpGet]
         [Route("All")]
-        public IActionResult GetAllStudents()
+        public Task<IEnumerable<Student>> GetAllStudents()
         {
-            return Ok(studentsService.GetAllStudents());
+            return studentsService.GetAllStudents();
         }
 
         [HttpGet]
-        [Route("AllEnroll")]
-        public IActionResult GetAllEnrollments()
+        [Route("{id}")]
+        public Task<Student> GetStudentById(int id)
         {
-            return Ok(studentsService.GetAllEnrollments());
+            return studentsService.GetStudentByIdAsync(id);
         }
+
+        [HttpPut]
+        [Route("Update")]
+        public Task UpdateStudent(Student student)
+        {
+            return studentsService.UpdateStudentAsync(student);
+        }
+
+        [HttpPost]
+        [Route("Create")]
+        public Task CreateStudent(Student student)
+        {
+            return studentsService.CreateStudentAsync(student);
+        }
+
     }
 }
