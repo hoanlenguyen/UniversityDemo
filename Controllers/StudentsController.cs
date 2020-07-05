@@ -1,8 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using UniversityDemo.Models;
-using UniversityDemo.Service;
+using UniversityDemo.Services;
 
 namespace UniversityDemo.Controllers
 {
@@ -10,41 +10,21 @@ namespace UniversityDemo.Controllers
     [Route("api/[controller]")]
     public class StudentsController : ControllerBase
     {
-        private readonly IStudentsService studentsService;
+        private readonly StudentService studentService;
+        private readonly IMapper mapper;
 
-        public StudentsController(IStudentsService studentsService)
+        public StudentsController(StudentService studentService, IMapper mapper)
         {
-            this.studentsService = studentsService;
+            this.studentService = studentService;
+            this.mapper = mapper;
         }
 
-        
-        [HttpGet]
-        [Route("All")]
-        public Task<IEnumerable<Student>> GetAllStudents()
+        [HttpGet("Get/{id}")]
+        public async Task<IActionResult> Get(int id)
         {
-            return studentsService.GetAllStudents();
+            var entity= await studentService.Get(id);
+            var result= mapper.Map<StudentDTO>(entity);
+            return new JsonResult(result) { StatusCode = 200 };
         }
-
-        [HttpGet]
-        [Route("{id}")]
-        public Task<Student> GetStudentById(int id)
-        {
-            return studentsService.GetStudentByIdAsync(id);
-        }
-
-        [HttpPut]
-        [Route("Update")]
-        public Task UpdateStudent(Student student)
-        {
-            return studentsService.UpdateStudentAsync(student);
-        }
-
-        [HttpPost]
-        [Route("Create")]
-        public Task CreateStudent(Student student)
-        {
-            return studentsService.CreateStudentAsync(student);
-        }
-
     }
 }

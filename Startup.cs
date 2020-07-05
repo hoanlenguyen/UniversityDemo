@@ -1,13 +1,23 @@
+using AutoMapper;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.OpenApi.Models;
-using Newtonsoft.Json;
+using Microsoft.IdentityModel.Tokens;
+using System;
+using System.Text;
+using UniversityDemo.Authentication;
 using UniversityDemo.Data;
-using UniversityDemo.Service;
+using UniversityDemo.Identity;
+using UniversityDemo.Models;
+using UniversityDemo.Repositories;
+using UniversityDemo.Repositories.Internal;
+using UniversityDemo.Services;
+using UniversityDemo.Test;
 
 namespace UniversityDemo
 {
@@ -23,25 +33,47 @@ namespace UniversityDemo
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<SchoolContext>(options =>
-                                                 options.UseSqlServer(Configuration.GetConnectionString("Default")));
+            services.AddDbContext<DemoDbContext>(options =>
+                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
-            services.AddControllers().AddNewtonsoftJson(options =>
-                options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
-            );
+            services.AddIdentity<ApplicationUser, ApplicationRole>()
+                .AddDefaultTokenProviders()
+                .AddEntityFrameworkStores<DemoDbContext>();
 
-            //services.AddControllers().AddJsonOptions(options => options.JsonSerializerOptions.ReferenceLoopHandling = ReferenceLoopHandling.Preserve);
+            services.AddAutoMapper(typeof(Startup));
 
-            //services.AddControllers();
+            services.AddScoped<IAccountsService, AccountsService>();
+            services.AddScoped<IBlogRepository, BlogRepository>();
+            services.AddScoped<ICourseService, CourseService>();
+            services.AddScoped<StudentService, StudentService>();
+            services.AddScoped<BlogService>();
 
-            services.AddScoped<IStudentsService, StudentsService>();
+            services.AddTransient<IOperationTransient, Operation>();
+            services.AddScoped<IOperationScoped, Operation>();
+            services.AddSingleton<IOperationSingleton, Operation>();
+            services.AddSingleton<IOperationSingletonInstance>(new Operation(Guid.NewGuid()));
+            // OperationService depends on each of the other Operation types.
+            services.AddTransient<OperationService, OperationService>();
 
+            services.Configure<JWTSettings>(Configuration.GetSection("JWTSettings"));
 
-            services.AddSwaggerGen(c =>
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            .AddJwtBearer(options =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "My API", Version = "v1" });
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    ValidIssuer = Configuration["JWTSettings:Issuer"],
+                    ValidAudience = Configuration["JWTSettings:Audience"],
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["JWTSettings:SecretKey"]))
+                };
             });
 
+            services.AddControllers();
+            services.AddSwaggerGen();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -52,6 +84,8 @@ namespace UniversityDemo
                 app.UseDeveloperExceptionPage();
             }
 
+            app.UseHttpsRedirection();
+
             app.UseSwagger();
 
             app.UseSwaggerUI(c =>
@@ -59,8 +93,6 @@ namespace UniversityDemo
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
                 c.RoutePrefix = string.Empty;
             });
-
-            app.UseHttpsRedirection();
 
             app.UseRouting();
 

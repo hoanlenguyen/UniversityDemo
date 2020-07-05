@@ -2,11 +2,6 @@
 
 namespace UniversityDemo.Models
 {
-    public enum Grade
-    {
-        A, B, C, D, F
-    }
-
     public class Enrollment
     {
         public int EnrollmentID { get; set; }
@@ -14,15 +9,15 @@ namespace UniversityDemo.Models
         public int StudentID { get; set; }
         public Grade? Grade { get; set; }
 
-        #region reference
-
         [ForeignKey(nameof(CourseID))]
         public virtual Course Course { get; set; }
 
         [ForeignKey(nameof(StudentID))]
         public virtual Student Student { get; set; }
+    }
 
-        #endregion
-
+    public enum Grade
+    {
+        A, B, C, D, F
     }
 }
