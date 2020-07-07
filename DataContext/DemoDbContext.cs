@@ -1,9 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using UniversityDemo.Identity;
 using UniversityDemo.Models;
 
@@ -24,7 +20,7 @@ namespace UniversityDemo.Data
         public DbSet<Student> Students { get; set; }
         public DbSet<Enrollment> Enrollments { get; set; }
         public DbSet<Course> Courses { get; set; }
-        public DbSet<Blog> Blogs { get; set; }
+        //public DbSet<Blog> Blogs { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

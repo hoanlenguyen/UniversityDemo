@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Azure.Cosmos;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -10,10 +11,11 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Text;
+using System.Threading.Tasks;
 using UniversityDemo.Authentication;
 using UniversityDemo.Data;
+using UniversityDemo.DataContext.Cosmos;
 using UniversityDemo.Identity;
-using UniversityDemo.Models;
 using UniversityDemo.Repositories;
 using UniversityDemo.Repositories.Internal;
 using UniversityDemo.Services;
@@ -36,6 +38,10 @@ namespace UniversityDemo
             services.AddDbContext<DemoDbContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
+            services.AddSingleton<CosmosDbService>(
+                InitializeCosmosClientInstanceAsync(
+                    Configuration.GetSection("CosmosDb")).GetAwaiter().GetResult());
+
             services.AddIdentity<ApplicationUser, ApplicationRole>()
                 .AddDefaultTokenProviders()
                 .AddEntityFrameworkStores<DemoDbContext>();
@@ -43,16 +49,16 @@ namespace UniversityDemo
             services.AddAutoMapper(typeof(Startup));
 
             services.AddScoped<IAccountsService, AccountsService>();
-            services.AddScoped<IBlogRepository, BlogRepository>();
             services.AddScoped<ICourseService, CourseService>();
-            services.AddScoped<StudentService, StudentService>();
+            services.AddScoped<StudentService>();
+            services.AddScoped<IBlogRepository, BlogRepository>();
             services.AddScoped<BlogService>();
 
+            //test Injection dependency
             services.AddTransient<IOperationTransient, Operation>();
             services.AddScoped<IOperationScoped, Operation>();
             services.AddSingleton<IOperationSingleton, Operation>();
             services.AddSingleton<IOperationSingletonInstance>(new Operation(Guid.NewGuid()));
-            // OperationService depends on each of the other Operation types.
             services.AddTransient<OperationService, OperationService>();
 
             services.Configure<JWTSettings>(Configuration.GetSection("JWTSettings"));
@@ -102,6 +108,20 @@ namespace UniversityDemo
             {
                 endpoints.MapControllers();
             });
+        }
+
+        private static async Task<CosmosDbService> InitializeCosmosClientInstanceAsync(IConfigurationSection configurationSection)
+        {
+            string databaseName = configurationSection.GetSection("DatabaseName").Value;
+            string containerName = configurationSection.GetSection("ContainerName").Value;
+            string account = configurationSection.GetSection("Account").Value;
+            string key = configurationSection.GetSection("Key").Value;
+            CosmosClient client = new CosmosClient(account, key);
+            CosmosDbService cosmosDbService = new CosmosDbService(client, databaseName, containerName);
+            DatabaseResponse database = await client.CreateDatabaseIfNotExistsAsync(databaseName);
+            await database.Database.CreateContainerIfNotExistsAsync(containerName, "/type");
+
+            return cosmosDbService;
         }
     }
 }

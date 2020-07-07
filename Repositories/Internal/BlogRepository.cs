@@ -1,48 +1,45 @@
-﻿using System;
+﻿using Microsoft.Azure.Cosmos;
+using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using UniversityDemo.Data;
+using UniversityDemo.DataContext.Cosmos;
 using UniversityDemo.Models;
+using UniversityDemo.Repositories.BaseRepositories;
 
 namespace UniversityDemo.Repositories.Internal
 {
-    internal class BlogRepository : IBlogRepository
+    public class BlogRepository : CosmosRepository<Blog>, IBlogRepository
     {
-        private readonly DemoDbContext context;
-        public BlogRepository(DemoDbContext context)
+        private CosmosDbService cosmosDb { get; }
+
+        public BlogRepository(CosmosDbService cosmosDb):base(cosmosDb.Container)
         {
-            this.context = context;
+            this.cosmosDb = cosmosDb;
         }
+
         public async Task<bool> DeleteAsync(params string[] ids)
         {
-            if (ids.Length == 0)
-                return false;
             foreach (var id in ids)
             {
-                var entity = context.Blogs.FirstOrDefault(x => x.Id.Equals(id));
-                context.Blogs.Remove(entity);
+                await cosmosDb.Container.DeleteItemAsync<Blog>(id, new PartitionKey(nameof(Blog)));
             }
-            await context.SaveChangesAsync();
+
             return true;
         }
 
-        public Task<List<Blog>> FindAllAsync()
+        public async Task<List<Blog>> FindAllAsync()
+        {
+            return await QueryAll();
+        }
+
+        public Task<Blog> FindOneByIdAsync(string id)
         {
             throw new NotImplementedException();
         }
 
-        public async Task<Blog> FindOneByIdAsync(string id)
+        public Task<Blog> InsertAsync(Blog item)
         {
-            return context.Blogs.SingleOrDefault(x => x.Id.ToString().Equals(id));
-        }
-
-        public async Task<Blog> InsertAsync(Blog item)
-        {
-            item.Id = new Guid();
-            var x=  await context.Blogs.AddAsync(item);
-            await context.SaveChangesAsync();
-            return x.Entity;
+            throw new NotImplementedException();
         }
 
         public Task<Blog> UpdateAsync(Blog item)

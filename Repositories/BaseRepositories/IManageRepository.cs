@@ -2,7 +2,7 @@
 
 namespace UniversityDemo.Repositories.BaseRepositories
 {
-    public interface IManageRepository<T> : IRepository<T> where T : BaseEntity
+    public interface IManageRepository<T> : IBaseRepository<T> where T : BaseEntity
     {
     }
 }

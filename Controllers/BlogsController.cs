@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using UniversityDemo.Models;
 using UniversityDemo.Services;
 
 namespace UniversityDemo.Controllers
@@ -13,22 +9,36 @@ namespace UniversityDemo.Controllers
     public class BlogsController : ControllerBase
     {
         private readonly BlogService blogService;
+
         public BlogsController(BlogService blogService)
         {
             this.blogService = blogService;
         }
 
-        [HttpPost("Create")]
-        public async Task<IActionResult> Create(Blog blog)
+        //[HttpPost("Create")]
+        //public async Task<IActionResult> Create(Blog blog)
+        //{
+        //    await cosmosDbService.AddItemAsync(blog);
+        //    return Ok();
+        //}
+
+        //[HttpGet("{id}")]
+        //public async Task<IActionResult> Get(string id)
+        //{
+        //    string query = $"SELECT * FROM c WHERE c.id='{id}' AND c.type='{nameof(Blog)}'";
+        //    return Ok(await cosmosDbService.GetItemsAsync(query));
+        //}
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteAsync(string id)
         {
-            await blogService.CreateAsync(blog);
-            return Ok();
+            return Ok(await blogService.DeleteAsync(id));
         }
 
-        [HttpGet("{id}")]
-        public async Task<IActionResult>Get(string id)
+        [HttpGet("all")]
+        public async Task<IActionResult> GetAllAsync()
         {
-            return Ok(await blogService.GetAsync(id));
+            return Ok(await blogService.GetAllAsync());
         }
     }
 }
