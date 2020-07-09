@@ -15,6 +15,8 @@ namespace UniversityDemo.BaseEntities
         [Key]
         public string Id { get; set; }
 
+        public Meta Meta { get; set; }
+
         [JsonProperty(PropertyName = "type")]
         public string Type { get; set; }
         

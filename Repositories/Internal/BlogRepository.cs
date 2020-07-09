@@ -1,5 +1,4 @@
 ﻿using Microsoft.Azure.Cosmos;
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using UniversityDemo.DataContext.Cosmos;
@@ -12,7 +11,7 @@ namespace UniversityDemo.Repositories.Internal
     {
         private CosmosDbService cosmosDb { get; }
 
-        public BlogRepository(CosmosDbService cosmosDb):base(cosmosDb.Container)
+        public BlogRepository(CosmosDbService cosmosDb) : base(cosmosDb.Container)
         {
             this.cosmosDb = cosmosDb;
         }
@@ -32,19 +31,33 @@ namespace UniversityDemo.Repositories.Internal
             return await QueryAll();
         }
 
-        public Task<Blog> FindOneByIdAsync(string id)
+        public async Task<Blog> FindOneByIdAsync(string id)
         {
-            throw new NotImplementedException();
+            return await QueryFindOneById(id);
         }
 
-        public Task<Blog> InsertAsync(Blog item)
+        public async Task<List<Blog>> FindByIdsAsync(params string[] ids)
         {
-            throw new NotImplementedException();
+            return await QueryFindItemsByIds(ids);
         }
 
-        public Task<Blog> UpdateAsync(Blog item)
+        public async Task<Blog> InsertAsync(Blog item)
         {
-            throw new NotImplementedException();
+            return await InsertItemAsync(item);
         }
+
+        public async Task<Blog> UpdateAsync(Blog item)
+        {
+            return await UpdateItemAsync(item);
+        }
+
+        #region Cosmos
+
+        protected override string CreatePartitionKey()
+        {
+            return nameof(Blog);
+        }
+
+        #endregion Cosmos
     }
 }

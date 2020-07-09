@@ -61,7 +61,7 @@ namespace UniversityDemo.Authentication
             if (result.Succeeded)
             {
                 var user = await _userManager.FindByEmailAsync(input.Email);
-                _logger.LogInformation("User {0} has logged", user.UserName);
+                //_logger.LogInformation("User {0} has logged", user.UserName);
                 return new JsonResult(new Dictionary<string, object>
                     {
                         { "access_token", GetAccessToken(input.Email) },

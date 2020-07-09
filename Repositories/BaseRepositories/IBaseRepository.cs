@@ -10,6 +10,8 @@ namespace UniversityDemo.Repositories.BaseRepositories
 
         Task<T> FindOneByIdAsync(string id);
 
+        Task<List<T>> FindByIdsAsync(params string[] ids);
+
         Task<bool> DeleteAsync(params string[] ids);
 
         Task<T> InsertAsync(T item);

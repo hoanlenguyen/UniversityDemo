@@ -14,14 +14,24 @@ namespace UniversityDemo.Services
             this.blogRepository = blogRepository;
         }
 
-        public async Task CreateAsync(Blog blog)
+        public async Task<Blog> CreateAsync(Blog blog)
         {
-            await blogRepository.InsertAsync(blog);
+            return await blogRepository.InsertAsync(blog);
         }
 
         public async Task<Blog> GetAsync(string id)
         {
             return await blogRepository.FindOneByIdAsync(id);
+        }
+
+        public async Task<List<Blog>> GetByIdsAsync(params string[] ids)
+        {
+            return await blogRepository.FindByIdsAsync(ids);
+        }
+
+        public async Task<Blog> UpdateAsync(Blog blog)
+        {
+            return await blogRepository.UpdateAsync(blog);
         }
 
         public async Task<bool> DeleteAsync(string id)
