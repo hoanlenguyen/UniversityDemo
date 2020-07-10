@@ -27,6 +27,7 @@ namespace UniversityDemo.Controllers
             SingletonInstanceOperation = singletonInstanceOperation;
         }
 
+        //[Authorize]
         [HttpGet("GetOperationResults")]
         public IActionResult GetResults()
         {

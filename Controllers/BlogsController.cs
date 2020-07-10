@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
+using UniversityDemo.Identity;
 using UniversityDemo.Models;
 using UniversityDemo.Services;
 
@@ -7,11 +9,12 @@ namespace UniversityDemo.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class BlogsController : ControllerBase
+    public class BlogsController : BaseApiController
     {
         private readonly BlogService blogService;
 
-        public BlogsController(BlogService blogService)
+        public BlogsController(BlogService blogService,
+                               UserManager<ApplicationUser> userManager)
         {
             this.blogService = blogService;
         }
@@ -50,6 +53,6 @@ namespace UniversityDemo.Controllers
         public async Task<IActionResult> GetAllAsync()
         {
             return Ok(await blogService.GetAllAsync());
-        }
+        }        
     }
 }

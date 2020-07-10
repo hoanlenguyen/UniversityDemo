@@ -2,6 +2,7 @@ using AutoMapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Azure.Cosmos;
 using Microsoft.EntityFrameworkCore;
@@ -10,6 +11,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using System;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using UniversityDemo.Authentication;
@@ -43,9 +45,26 @@ namespace UniversityDemo
                     Configuration.GetSection("CosmosDb")).GetAwaiter().GetResult());
 
             services.AddIdentity<ApplicationUser, ApplicationRole>()
-                .AddDefaultTokenProviders()
+                //.AddDefaultTokenProviders()
                 .AddEntityFrameworkStores<DemoDbContext>();
 
+            services.AddHttpContextAccessor();
+
+            services.Configure<JWTSettings>(Configuration.GetSection("JWTSettings"));
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+           .AddJwtBearer(options =>
+           {
+               options.TokenValidationParameters = new TokenValidationParameters
+               {
+                   ValidateIssuer = true,
+                   ValidateAudience = true,
+                   ValidateLifetime = true,
+                   ValidateIssuerSigningKey = true,
+                   ValidIssuer = Configuration["JWTSettings:Issuer"],
+                   ValidAudience = Configuration["JWTSettings:Audience"],
+                   IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["JWTSettings:SecretKey"]))
+               };
+           });
             services.AddAutoMapper(typeof(Startup));
 
             services.AddScoped<IAccountsService, AccountsService>();
@@ -53,6 +72,13 @@ namespace UniversityDemo
             services.AddScoped<StudentService>();
             services.AddScoped<IBlogRepository, BlogRepository>();
             services.AddScoped<BlogService>();
+
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+
+            services.AddTransient<ClaimsPrincipal>(
+               s => s.GetService<IHttpContextAccessor>().HttpContext.User);
+
+            services.AddTransient<IUserInfo, UserInfo>();
 
             //test Injection dependency
             services.AddTransient<IOperationTransient, Operation>();
@@ -63,20 +89,7 @@ namespace UniversityDemo
 
             services.Configure<JWTSettings>(Configuration.GetSection("JWTSettings"));
 
-            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-            .AddJwtBearer(options =>
-            {
-                options.TokenValidationParameters = new TokenValidationParameters
-                {
-                    ValidateIssuer = true,
-                    ValidateAudience = true,
-                    ValidateLifetime = true,
-                    ValidateIssuerSigningKey = true,
-                    ValidIssuer = Configuration["JWTSettings:Issuer"],
-                    ValidAudience = Configuration["JWTSettings:Audience"],
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["JWTSettings:SecretKey"]))
-                };
-            });
+           
 
             services.AddControllers();
             services.AddSwaggerGen();

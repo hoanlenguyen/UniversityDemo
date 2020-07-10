@@ -1,13 +1,12 @@
 ﻿using JWT;
 using JWT.Algorithms;
 using JWT.Serializers;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using UniversityDemo.Identity;
 
@@ -22,21 +21,24 @@ namespace UniversityDemo.Authentication
         private readonly RoleManager<ApplicationRole> _roleManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly JWTSettings _options;
-        private readonly ILogger<AccountsService> _logger;
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        //private readonly UserManager<IdentityUser> _identityManager;
 
         public AccountsService(
             UserManager<ApplicationUser> userManager
             , RoleManager<ApplicationRole> roleManager
             , SignInManager<ApplicationUser> signInManager
             , IOptions<JWTSettings> optionsAccessor
-            , ILogger<AccountsService> logger
+            , IHttpContextAccessor httpContextAccessor
+            //, UserManager<IdentityUser> identityManager
             )
         {
             _userManager = userManager;
             _roleManager = roleManager;
             _signInManager = signInManager;
             _options = optionsAccessor.Value;
-            _logger = logger;
+            _httpContextAccessor = httpContextAccessor;
+            //_identityManager = identityManager;
         }
 
         public async Task<JsonResult> Register([FromForm]Credentials input)
@@ -65,7 +67,8 @@ namespace UniversityDemo.Authentication
                 return new JsonResult(new Dictionary<string, object>
                     {
                         { "access_token", GetAccessToken(input.Email) },
-                        { "id_token", GetIdToken(user) }
+                        { "id_token", GetIdToken(user) },
+                        { "id", user.Id }
                     });
             }
             return new JsonResult("Unable to sign in") { StatusCode = 401 };
@@ -120,6 +123,19 @@ namespace UniversityDemo.Authentication
             DateTime origin = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
             TimeSpan diff = date.ToUniversalTime() - origin;
             return Math.Floor(diff.TotalSeconds);
+        }
+
+        public async Task<JsonResult> GetUserInfo()
+        {
+            string userName = _httpContextAccessor.HttpContext.User.Identity.Name;
+            //var userId = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
+            //return new UserInfo { Id = userId, UserName = userName };
+            //var user = await _userManager.FindByNameAsync(userName);
+            return new JsonResult(new Dictionary<string, object>
+                    {
+                        { "userName",userName },
+                        { "userId", "123"},
+                    });
         }
     }
 }

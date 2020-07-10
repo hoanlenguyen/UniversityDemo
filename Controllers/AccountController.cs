@@ -1,6 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
+using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using UniversityDemo.Authentication;
+using UniversityDemo.Identity;
 
 namespace UniversityDemo.Controllers
 {
@@ -9,10 +14,15 @@ namespace UniversityDemo.Controllers
     public class AccountController : ControllerBase
     {
         private readonly IAccountsService _accountsService;
-
-        public AccountController(IAccountsService accountsService)
+        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly ClaimsPrincipal _caller;
+        public AccountController(IAccountsService accountsService,
+                                 UserManager<ApplicationUser> userManager,
+                                 ClaimsPrincipal caller)
         {
             _accountsService = accountsService;
+            _userManager = userManager;
+            _caller = caller;
         }
 
         [HttpPost]
@@ -38,6 +48,25 @@ namespace UniversityDemo.Controllers
         }
 
         [HttpGet]
+        [Route("userinfo")]
+        public async Task<IActionResult> GetUserInfo()
+        {
+            //var user = GetCurrentUserAsync().Result;
+            //var userId = _userManager.GetUserId(HttpContext.User);
+            string userName = User.Identity.IsAuthenticated? User.Identity.Name:"none";
+            var user = await _userManager.FindByIdAsync("f1d940ae-a419-447e-ab78-f6be12f9bef2");
+            //return new JsonResult(_caller.Claims.Select(
+            //    c => new { c.Type, c.Value }));
+            return new JsonResult(
+                new Dictionary<string, object>
+                    {
+                        { "userName",user.Id },
+                        { "userId", userName},
+                    }
+            );
+        }
+
+        [HttpGet]
         [Route("Logout")]
         public async Task<IActionResult> Logout()
         {
@@ -49,5 +78,7 @@ namespace UniversityDemo.Controllers
         {
             return new JsonResult(message) { StatusCode = 400 };
         }
+
+        private Task<ApplicationUser> GetCurrentUserAsync() => _userManager.GetUserAsync(HttpContext.User);
     }
 }

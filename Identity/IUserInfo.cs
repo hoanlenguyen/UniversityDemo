@@ -1,6 +1,6 @@
 ﻿namespace UniversityDemo.Identity
 {
-    public class UserInfo : IUserInfo
+    public interface IUserInfo
     {
         public string Id { get; set; }
 
