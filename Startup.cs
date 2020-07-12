@@ -51,20 +51,22 @@ namespace UniversityDemo
             services.AddHttpContextAccessor();
 
             services.Configure<JWTSettings>(Configuration.GetSection("JWTSettings"));
+
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-           .AddJwtBearer(options =>
-           {
-               options.TokenValidationParameters = new TokenValidationParameters
+               .AddJwtBearer(options =>
                {
-                   ValidateIssuer = true,
-                   ValidateAudience = true,
-                   ValidateLifetime = true,
-                   ValidateIssuerSigningKey = true,
-                   ValidIssuer = Configuration["JWTSettings:Issuer"],
-                   ValidAudience = Configuration["JWTSettings:Audience"],
-                   IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["JWTSettings:SecretKey"]))
-               };
-           });
+                   options.TokenValidationParameters = new TokenValidationParameters
+                   {
+                       ValidateIssuer = true,
+                       ValidateAudience = true,
+                       ValidateLifetime = true,
+                       ValidateIssuerSigningKey = true,
+                       ValidIssuer = Configuration["JWTSettings:Issuer"],
+                       ValidAudience = Configuration["JWTSettings:Audience"],
+                       IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["JWTSettings:SecretKey"]))
+                   };
+               });
+
             services.AddAutoMapper(typeof(Startup));
 
             services.AddScoped<IAccountsService, AccountsService>();
@@ -73,12 +75,7 @@ namespace UniversityDemo
             services.AddScoped<IBlogRepository, BlogRepository>();
             services.AddScoped<BlogService>();
 
-            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-
-            services.AddTransient<ClaimsPrincipal>(
-               s => s.GetService<IHttpContextAccessor>().HttpContext.User);
-
-            services.AddTransient<IUserInfo, UserInfo>();
+            //services.AddTransient<IUserInfo, UserInfo>();
 
             //test Injection dependency
             services.AddTransient<IOperationTransient, Operation>();
@@ -87,11 +84,10 @@ namespace UniversityDemo
             services.AddSingleton<IOperationSingletonInstance>(new Operation(Guid.NewGuid()));
             services.AddTransient<OperationService, OperationService>();
 
-            services.Configure<JWTSettings>(Configuration.GetSection("JWTSettings"));
-
-           
+            services.Configure<JWTSettings>(Configuration.GetSection("JWTSettings"));          
 
             services.AddControllers();
+
             services.AddSwaggerGen();
         }
 
