@@ -153,3 +153,4 @@ D:\.Net\UniversityDemo\obj\Debug\netcoreapp3.1\staticwebassets\UniversityDemo.St
 D:\.Net\UniversityDemo\obj\Debug\netcoreapp3.1\UniversityDemo.dll
 D:\.Net\UniversityDemo\obj\Debug\netcoreapp3.1\UniversityDemo.pdb
 D:\.Net\UniversityDemo\obj\Debug\netcoreapp3.1\UniversityDemo.genruntimeconfig.cache
+D:\.Net\UniversityDemo\obj\Debug\netcoreapp3.1\UniversityDemo.csproj.CoreCompileInputs.cache

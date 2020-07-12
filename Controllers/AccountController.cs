@@ -53,8 +53,8 @@ namespace UniversityDemo.Controllers
         {
             //var user = GetCurrentUserAsync().Result;
             //var userId = _userManager.GetUserId(HttpContext.User);
-            string userName = User.Identity.IsAuthenticated? User.Identity.Name:"none";
-            var user = await _userManager.FindByIdAsync("f1d940ae-a419-447e-ab78-f6be12f9bef2");
+            string userName = User.Identity.IsAuthenticated? User.Identity.Name:null;
+            var user = userName!=null? await _userManager.FindByIdAsync(userName) :null;
             //return new JsonResult(_caller.Claims.Select(
             //    c => new { c.Type, c.Value }));
             return new JsonResult(
