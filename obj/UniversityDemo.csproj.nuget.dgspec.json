@@ -10,14 +10,11 @@
         "projectUniqueName": "D:\\.Net\\UniversityDemo\\UniversityDemo.csproj",
         "projectName": "UniversityDemo",
         "projectPath": "D:\\.Net\\UniversityDemo\\UniversityDemo.csproj",
-        "packagesPath": "C:\\Users\\Hoan\\.nuget\\packages\\",
+        "packagesPath": "C:\\Users\\lengu\\.nuget\\packages\\",
         "outputPath": "D:\\.Net\\UniversityDemo\\obj\\",
         "projectStyle": "PackageReference",
-        "fallbackFolders": [
-          "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
-        ],
         "configFilePaths": [
-          "C:\\Users\\Hoan\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\lengu\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
@@ -25,9 +22,7 @@
         ],
         "sources": {
           "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-          "D:\\Gannha\\nugets": {},
-          "https://api.nuget.org/v3/index.json": {},
-          "https://pkgs.dev.azure.com/25inc/_packaging/gnnuget/nuget/v3/index.json": {}
+          "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
           "netcoreapp3.1": {
