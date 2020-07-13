@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
+using UniversityDemo.Controllers.BaseControllers;
 using UniversityDemo.Identity;
 using UniversityDemo.Models;
 using UniversityDemo.Services;
@@ -13,8 +14,7 @@ namespace UniversityDemo.Controllers
     {
         private readonly BlogService blogService;
 
-        public BlogsController(BlogService blogService,
-                               UserManager<ApplicationUser> userManager)
+        public BlogsController(BlogService blogService)
         {
             this.blogService = blogService;
         }
@@ -22,7 +22,7 @@ namespace UniversityDemo.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateAsync(Blog blog)
         {
-            return Ok(await blogService.CreateAsync(blog));
+            return Ok(await blogService.CreateAsync(GetUserInfo(User), blog));
         }
 
         [HttpGet("{id}")]
@@ -40,19 +40,19 @@ namespace UniversityDemo.Controllers
         [HttpPut]
         public async Task<IActionResult> UpdateAsync(Blog blog)
         {
-            return Ok(await blogService.UpdateAsync(blog));
+            return Ok(await blogService.UpdateAsync(GetUserInfo(User), blog));
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteAsync(string id)
         {
-            return Ok(await blogService.DeleteAsync(id));
+            return Ok(await blogService.DeleteAsync(GetUserInfo(User), id));
         }
 
         [HttpGet("all")]
         public async Task<IActionResult> GetAllAsync()
         {
             return Ok(await blogService.GetAllAsync());
-        }        
+        }
     }
 }

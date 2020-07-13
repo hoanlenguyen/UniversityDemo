@@ -1,27 +1,23 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
-using System.Linq;
-using System.Security.Claims;
 using System.Threading.Tasks;
 using UniversityDemo.Authentication;
-using UniversityDemo.Identity;
+using UniversityDemo.Controllers.BaseControllers;
 
 namespace UniversityDemo.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class AccountController : ControllerBase
+    public class AccountController : BaseApiController
     {
         private readonly IAccountsService _accountsService;
+
         public AccountController(IAccountsService accountsService)
         {
             _accountsService = accountsService;
         }
 
-        [HttpPost]
-        [Route("Register")]
+        [HttpPost("Register")]
         public async Task<IActionResult> Register([FromBody]Credentials credentials)
         {
             if (ModelState.IsValid)
@@ -31,8 +27,7 @@ namespace UniversityDemo.Controllers
             return Error("Unexpected error");
         }
 
-        [HttpPost]
-        [Route("Login")]
+        [HttpPost("Login")]
         public async Task<IActionResult> Login([FromBody]Credentials credentials)
         {
             if (ModelState.IsValid)
@@ -42,31 +37,36 @@ namespace UniversityDemo.Controllers
             return Error("Unexpected error");
         }
 
-        [Authorize]
-        [HttpGet("current/userinfo")]
-        public async Task<IActionResult> GetUserInfo()
-        {
-            return new JsonResult(
-                    new Dictionary<string, object>
-                    {
-                        { "isAuthenticated",User.Identity.IsAuthenticated },
-                        { "userId",User.FindFirstValue(ClaimTypes.NameIdentifier) },
-                        { "userName", User.Identity.Name},
-                    });
-        }
-
-        [HttpGet]
-        [Route("Logout")]
+        [HttpGet("Logout")]
         public async Task<IActionResult> Logout()
         {
             await _accountsService.Logout();
             return Ok();
         }
 
+        //[Authorize]
+        [HttpGet("current/userinfo")]
+        public async Task<IActionResult> GetUserInfo()
+        {
+            //return new JsonResult(
+            //        new Dictionary<string, object>
+            //        {
+            //            { "isAuthenticated",User.Identity.IsAuthenticated },
+            //            { "userId",User.FindFirstValue(ClaimTypes.NameIdentifier) },
+            //            { "userName", User.Identity.Name},
+            //        });
+            var user = base.GetUserInfo(User);
+            return new JsonResult(
+                    new Dictionary<string, object>
+                    {
+                        { "userId",user.Id },
+                        { "userName", user.UserName},
+                    });
+        }
+
         private JsonResult Error(string message)
         {
             return new JsonResult(message) { StatusCode = 400 };
         }
-
     }
 }

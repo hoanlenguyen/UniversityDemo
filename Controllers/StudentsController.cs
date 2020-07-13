@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
-using UniversityDemo.Models;
+using UniversityDemo.Models.DTO;
 using UniversityDemo.Services;
 
 namespace UniversityDemo.Controllers
@@ -22,8 +22,8 @@ namespace UniversityDemo.Controllers
         [HttpGet("Get/{id}")]
         public async Task<IActionResult> Get(int id)
         {
-            var entity= await studentService.Get(id);
-            var result= mapper.Map<StudentDTO>(entity);
+            var entity = await studentService.Get(id);
+            var result = mapper.Map<StudentDTO>(entity);
             return new JsonResult(result) { StatusCode = 200 };
         }
     }

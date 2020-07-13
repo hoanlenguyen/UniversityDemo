@@ -1,8 +1,3 @@
-D:\.Net\UniversityDemo\obj\Debug\netcoreapp3.1\UniversityDemo.AssemblyInfoInputs.cache
-D:\.Net\UniversityDemo\obj\Debug\netcoreapp3.1\UniversityDemo.AssemblyInfo.cs
-D:\.Net\UniversityDemo\obj\Debug\netcoreapp3.1\UniversityDemo.MvcApplicationPartsAssemblyInfo.cs
-D:\.Net\UniversityDemo\obj\Debug\netcoreapp3.1\UniversityDemo.MvcApplicationPartsAssemblyInfo.cache
-D:\.Net\UniversityDemo\obj\Debug\netcoreapp3.1\UniversityDemo.csprojAssemblyReference.cache
 D:\.Net\UniversityDemo\bin\Debug\netcoreapp3.1\Microsoft.Azure.Cosmos.ServiceInterop.dll
 D:\.Net\UniversityDemo\bin\Debug\netcoreapp3.1\Cosmos.CRTCompat.dll
 D:\.Net\UniversityDemo\bin\Debug\netcoreapp3.1\appsettings.Development.json
@@ -146,6 +141,8 @@ D:\.Net\UniversityDemo\bin\Debug\netcoreapp3.1\runtimes\unix\lib\netstandard2.0\
 D:\.Net\UniversityDemo\bin\Debug\netcoreapp3.1\runtimes\win\lib\netstandard2.0\System.Private.ServiceModel.dll
 D:\.Net\UniversityDemo\bin\Debug\netcoreapp3.1\runtimes\win\lib\netstandard2.0\System.Runtime.Caching.dll
 D:\.Net\UniversityDemo\bin\Debug\netcoreapp3.1\runtimes\win\lib\netstandard2.0\System.Security.Cryptography.ProtectedData.dll
+D:\.Net\UniversityDemo\obj\Debug\netcoreapp3.1\UniversityDemo.AssemblyInfoInputs.cache
+D:\.Net\UniversityDemo\obj\Debug\netcoreapp3.1\UniversityDemo.AssemblyInfo.cs
 D:\.Net\UniversityDemo\obj\Debug\netcoreapp3.1\UniversityDemo.RazorTargetAssemblyInfo.cache
 D:\.Net\UniversityDemo\obj\Debug\netcoreapp3.1\UniversityDemo.csproj.CopyComplete
 D:\.Net\UniversityDemo\obj\Debug\netcoreapp3.1\staticwebassets\UniversityDemo.StaticWebAssets.Manifest.cache
@@ -153,4 +150,6 @@ D:\.Net\UniversityDemo\obj\Debug\netcoreapp3.1\staticwebassets\UniversityDemo.St
 D:\.Net\UniversityDemo\obj\Debug\netcoreapp3.1\UniversityDemo.dll
 D:\.Net\UniversityDemo\obj\Debug\netcoreapp3.1\UniversityDemo.pdb
 D:\.Net\UniversityDemo\obj\Debug\netcoreapp3.1\UniversityDemo.genruntimeconfig.cache
-D:\.Net\UniversityDemo\obj\Debug\netcoreapp3.1\UniversityDemo.csproj.CoreCompileInputs.cache
+D:\.Net\UniversityDemo\obj\Debug\netcoreapp3.1\UniversityDemo.csprojAssemblyReference.cache
+D:\.Net\UniversityDemo\obj\Debug\netcoreapp3.1\UniversityDemo.MvcApplicationPartsAssemblyInfo.cs
+D:\.Net\UniversityDemo\obj\Debug\netcoreapp3.1\UniversityDemo.MvcApplicationPartsAssemblyInfo.cache

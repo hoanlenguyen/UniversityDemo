@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using UniversityDemo.Identity;
 using UniversityDemo.Models;
 using UniversityDemo.Repositories;
 
@@ -14,9 +15,9 @@ namespace UniversityDemo.Services
             this.blogRepository = blogRepository;
         }
 
-        public async Task<Blog> CreateAsync(Blog blog)
+        public async Task<Blog> CreateAsync(UserInfo user, Blog item)
         {
-            return await blogRepository.InsertAsync(blog);
+            return await blogRepository.InsertAsync(user, item);
         }
 
         public async Task<Blog> GetAsync(string id)
@@ -29,14 +30,14 @@ namespace UniversityDemo.Services
             return await blogRepository.FindByIdsAsync(ids);
         }
 
-        public async Task<Blog> UpdateAsync(Blog blog)
+        public async Task<Blog> UpdateAsync(UserInfo user, Blog item)
         {
-            return await blogRepository.UpdateAsync(blog);
+            return await blogRepository.UpdateAsync(user, item);
         }
 
-        public async Task<bool> DeleteAsync(string id)
+        public async Task<bool> DeleteAsync(UserInfo user, string id)
         {
-            return await blogRepository.DeleteAsync(id);
+            return await blogRepository.DeleteAsync(user, id);
         }
 
         public async Task<List<Blog>> GetAllAsync()

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using UniversityDemo.BaseEntities;
+using UniversityDemo.Identity;
 
 namespace UniversityDemo.Repositories.BaseRepositories
 {
@@ -24,7 +25,8 @@ namespace UniversityDemo.Repositories.BaseRepositories
 
         protected virtual string DefaultFilterSql()
         {
-            return $"SELECT * FROM c WHERE c.type='{CreatePartitionKey()}' ";
+            return $"SELECT * FROM c WHERE c.type='{CreatePartitionKey()}' " +
+                    $"AND ( c.meta.isDeleted=false OR (NOT IS_DEFINED(c.meta.isDeleted))) ";
         }
 
         protected virtual string BuildFindOneByIdQuery(string id)
@@ -84,19 +86,49 @@ namespace UniversityDemo.Repositories.BaseRepositories
             return result;
         }
 
-        public async Task<T> UpdateItemAsync(T item)
+        public async Task<T> UpdateItemAsync(UserInfo user, T item)
         {
+            item.Meta.UpdatedAt = DateTime.UtcNow;
+            item.Meta.UpdatedBy = user.Id;
+            item.Type = CreatePartitionKey();
             DefaultContainer.UpsertItemAsync<T>(item, new PartitionKey(CreatePartitionKey())).GetAwaiter().GetResult();
             return await QueryFindOneById(item.Id);
         }
 
-        public async Task<T> InsertItemAsync(T item)
+        public async Task<T> InsertItemAsync(UserInfo user, T item)
         {
             item.Id = Guid.NewGuid().ToString();
-            item.Meta ??= new Meta();
+            //item.Meta ??= new Meta();
             item.Meta.CreatedAt = DateTime.UtcNow;
+            item.Meta.CreatedBy = user.Id;
+            item.Type = CreatePartitionKey();
             var entity = await this.DefaultContainer.CreateItemAsync<T>(item, new PartitionKey(CreatePartitionKey()));
             return await QueryFindOneById(entity.Resource.Id);
+        }
+
+        public async Task DeleteItemAsync(UserInfo user, T item)
+        {
+            item.Meta.UpdatedAt = DateTime.UtcNow;
+            item.Meta.UpdatedBy = user.Id;
+            item.Meta.IsDeleted = true;
+            await DefaultContainer.UpsertItemAsync<T>(item, new PartitionKey(CreatePartitionKey()));
+        }
+
+        public async Task DeleteItemAsync(UserInfo user, params string[] ids)
+        {
+            foreach (var id in ids)
+            {
+                var item = await QueryFindOneById(id);
+                item.Meta.UpdatedAt = DateTime.UtcNow;
+                item.Meta.UpdatedBy = user.Id;
+                item.Meta.IsDeleted = true;
+                await DefaultContainer.UpsertItemAsync<T>(item, new PartitionKey(CreatePartitionKey()));
+            }
+        }
+
+        public async Task RemoveItemAsync(T item)
+        {
+            await DefaultContainer.DeleteItemAsync<T>(item.Id, new PartitionKey(CreatePartitionKey()));
         }
     }
 }

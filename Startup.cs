@@ -2,8 +2,6 @@ using AutoMapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.Azure.Cosmos;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -11,7 +9,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using System;
-using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using UniversityDemo.Authentication;
@@ -72,6 +69,10 @@ namespace UniversityDemo
             services.AddScoped<IAccountsService, AccountsService>();
             services.AddScoped<ICourseService, CourseService>();
             services.AddScoped<StudentService>();
+
+            services.AddScoped<IPostRepository, PostRepository>();
+            services.AddScoped<PostService>();
+
             services.AddScoped<IBlogRepository, BlogRepository>();
             services.AddScoped<BlogService>();
 
@@ -84,9 +85,11 @@ namespace UniversityDemo
             services.AddSingleton<IOperationSingletonInstance>(new Operation(Guid.NewGuid()));
             services.AddTransient<OperationService, OperationService>();
 
-            services.Configure<JWTSettings>(Configuration.GetSection("JWTSettings"));          
+            services.Configure<JWTSettings>(Configuration.GetSection("JWTSettings"));
 
             services.AddControllers();
+
+            services.AddRouting(options => options.LowercaseUrls = true);
 
             services.AddSwaggerGen();
         }
@@ -110,6 +113,8 @@ namespace UniversityDemo
             });
 
             app.UseRouting();
+
+            app.UseAuthentication();
 
             app.UseAuthorization();
 

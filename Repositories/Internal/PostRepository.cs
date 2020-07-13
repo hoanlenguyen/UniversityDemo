@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using UniversityDemo.DataContext.Cosmos;
 using UniversityDemo.Identity;
@@ -7,11 +8,11 @@ using UniversityDemo.Repositories.BaseRepositories;
 
 namespace UniversityDemo.Repositories.Internal
 {
-    public class BlogRepository : CosmosRepository<Blog>, IBlogRepository
+    public class PostRepository : CosmosRepository<Post>, IPostRepository
     {
         private CosmosDbService cosmosDb { get; }
 
-        public BlogRepository(CosmosDbService cosmosDb) : base(cosmosDb.Container)
+        public PostRepository(CosmosDbService cosmosDb) : base(cosmosDb.Container)
         {
             this.cosmosDb = cosmosDb;
         }
@@ -22,27 +23,27 @@ namespace UniversityDemo.Repositories.Internal
             return true;
         }
 
-        public async Task<List<Blog>> FindAllAsync()
+        public async Task<List<Post>> FindAllAsync()
         {
             return await QueryAll();
         }
 
-        public async Task<Blog> FindOneByIdAsync(string id)
+        public async Task<Post> FindOneByIdAsync(string id)
         {
             return await QueryFindOneById(id);
         }
 
-        public async Task<List<Blog>> FindByIdsAsync(params string[] ids)
+        public async Task<List<Post>> FindByIdsAsync(params string[] ids)
         {
             return await QueryFindItemsByIds(ids);
         }
 
-        public async Task<Blog> InsertAsync(UserInfo user, Blog item)
+        public async Task<Post> InsertAsync(UserInfo user, Post item)
         {
             return await InsertItemAsync(user, item);
         }
 
-        public async Task<Blog> UpdateAsync(UserInfo user, Blog item)
+        public async Task<Post> UpdateAsync(UserInfo user, Post item)
         {
             return await UpdateItemAsync(user, item);
         }
@@ -51,7 +52,7 @@ namespace UniversityDemo.Repositories.Internal
 
         protected override string CreatePartitionKey()
         {
-            return nameof(Blog);
+            return nameof(Post);
         }
 
         #endregion Cosmos

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using UniversityDemo.BaseEntities;
+using UniversityDemo.Identity;
 
 namespace UniversityDemo.Repositories.BaseRepositories
 {
@@ -12,10 +13,10 @@ namespace UniversityDemo.Repositories.BaseRepositories
 
         Task<List<T>> FindByIdsAsync(params string[] ids);
 
-        Task<bool> DeleteAsync(params string[] ids);
+        Task<bool> DeleteAsync(UserInfo user, params string[] ids);
 
-        Task<T> InsertAsync(T item);
+        Task<T> InsertAsync(UserInfo user, T item);
 
-        Task<T> UpdateAsync(T item);
+        Task<T> UpdateAsync(UserInfo user, T item);
     }
 }
