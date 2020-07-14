@@ -1,4 +1,6 @@
 ﻿using Newtonsoft.Json;
+using System.Collections.Generic;
+using System.ComponentModel;
 using UniversityDemo.BaseEntities;
 
 namespace UniversityDemo.Models
@@ -19,7 +21,11 @@ namespace UniversityDemo.Models
         public string CoverImagePath { get; set; }
 
         [JsonProperty(PropertyName = "public")]
+        [DefaultValue(true)]
         public bool Public { get; set; } = true;
+
+        [JsonProperty(PropertyName = "tags")]
+        public List<string> Tags { get; set; } = new List<string>();
 
         [JsonProperty(PropertyName = "blogId")]
         public string BlogId { get; set; }

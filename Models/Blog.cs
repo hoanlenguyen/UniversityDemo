@@ -21,7 +21,7 @@ namespace UniversityDemo.Models
         [JsonIgnore]
         [DefaultValue(null)]
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
-        public IEnumerable<Post> Posts { get; set; } = new List<Post>();
+        public virtual IEnumerable<Post> Posts { get; set; } = new List<Post>();
 
         #endregion reference
     }

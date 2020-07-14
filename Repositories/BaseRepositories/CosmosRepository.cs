@@ -17,32 +17,34 @@ namespace UniversityDemo.Repositories.BaseRepositories
         {
             DefaultContainer = defaultContainer;
         }
-
         protected virtual string CreatePartitionKey()
         {
             return nameof(T);
         }
-
+        protected virtual string DefaultSql()
+        {
+            return $"SELECT * FROM c WHERE ";
+        }
         protected virtual string DefaultFilterSql()
         {
-            return $"SELECT * FROM c WHERE c.type='{CreatePartitionKey()}' " +
+            return $" c.type='{CreatePartitionKey()}' " +
                     $"AND ( c.meta.isDeleted=false OR (NOT IS_DEFINED(c.meta.isDeleted))) ";
         }
 
         protected virtual string BuildFindOneByIdQuery(string id)
         {
-            return $"{DefaultFilterSql()} AND c.id='{id}' ";
+            return $"{DefaultSql()}{DefaultFilterSql()} AND c.id='{id}' ";
         }
 
         protected virtual string BuildFindItemByIdsQuery(params string[] ids)
         {
             var arrStr = $"({ids.Select(x => $"'{x}'").Aggregate((x, y) => $"{x},{y}")})";
-            return $"{DefaultFilterSql()} AND c.id IN {arrStr}";
+            return $"{DefaultSql()}{DefaultFilterSql()} AND c.id IN {arrStr}";
         }
 
         protected virtual string BuildSelectAllQuery(string queryString = null)
         {
-            return $"{DefaultFilterSql()} " + queryString;
+            return $"{DefaultSql()}{DefaultFilterSql()} " + queryString;
         }
 
         protected FeedIterator<T> BuildDocumentQuery(string queryString)
@@ -71,7 +73,6 @@ namespace UniversityDemo.Repositories.BaseRepositories
             while (query.HasMoreResults)
             {
                 var response = await query.ReadNextAsync();
-
                 results.AddRange(response.ToList());
             }
 
@@ -106,6 +107,17 @@ namespace UniversityDemo.Repositories.BaseRepositories
             return await QueryFindOneById(entity.Resource.Id);
         }
 
+        public async Task DeleteItemByIdAsync(UserInfo user, string id)
+        {
+            var item = await QueryFindOneById(id);
+            if (item == null)
+                return;
+            item.Meta.UpdatedAt = DateTime.UtcNow;
+            item.Meta.UpdatedBy = user.Id;
+            item.Meta.IsDeleted = true;
+            await DefaultContainer.UpsertItemAsync<T>(item, new PartitionKey(CreatePartitionKey()));
+        }
+
         public async Task DeleteItemAsync(UserInfo user, T item)
         {
             item.Meta.UpdatedAt = DateTime.UtcNow;
@@ -118,11 +130,7 @@ namespace UniversityDemo.Repositories.BaseRepositories
         {
             foreach (var id in ids)
             {
-                var item = await QueryFindOneById(id);
-                item.Meta.UpdatedAt = DateTime.UtcNow;
-                item.Meta.UpdatedBy = user.Id;
-                item.Meta.IsDeleted = true;
-                await DefaultContainer.UpsertItemAsync<T>(item, new PartitionKey(CreatePartitionKey()));
+                await DeleteItemByIdAsync(user, id);
             }
         }
 

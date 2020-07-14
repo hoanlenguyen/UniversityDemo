@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.DependencyInjection;
 using System.Threading.Tasks;
 using UniversityDemo.Controllers.BaseControllers;
 using UniversityDemo.Identity;
@@ -53,6 +54,18 @@ namespace UniversityDemo.Controllers
         public async Task<IActionResult> GetAllAsync()
         {
             return Ok(await blogService.GetAllAsync());
+        }
+
+        [HttpGet("indexing")]
+        public async Task<IActionResult> GetIndexingAsync()
+        {
+            return Ok(await blogService.GetIndexingAsync());
+        }
+
+        [HttpGet("{blogId}/posts/indexing")]
+        public async Task<IActionResult> GetPostIndexingAsync(string blogId)
+        {
+            return Ok(await HttpContext.RequestServices.GetRequiredService<PostService>().GetIndexingAsync(blogId));
         }
     }
 }

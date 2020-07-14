@@ -1,4 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using Microsoft.Azure.Cosmos;
+using System.Collections;
+using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using UniversityDemo.DataContext.Cosmos;
 using UniversityDemo.Identity;
@@ -9,12 +12,22 @@ namespace UniversityDemo.Repositories.Internal
 {
     public class BlogRepository : CosmosRepository<Blog>, IBlogRepository
     {
-        private CosmosDbService cosmosDb { get; }
+        //private static QueryDefinition<Blog> PublicDefinition =>
+        //QueryDefinition<Blog>.Select
+        //    .Field(b => b.Id)
+        //    .Field(b => b.Url);
+
+        private static QueryDefinition<Blog> IndexingDefinition =>
+        QueryDefinition<Blog>.Select
+            .Field(b => b.Id)
+            .Field(b => b.Url);
 
         public BlogRepository(CosmosDbService cosmosDb) : base(cosmosDb.Container)
         {
             this.cosmosDb = cosmosDb;
         }
+
+        private CosmosDbService cosmosDb { get; }
 
         public async Task<bool> DeleteAsync(UserInfo user, params string[] ids)
         {
@@ -45,6 +58,19 @@ namespace UniversityDemo.Repositories.Internal
         public async Task<Blog> UpdateAsync(UserInfo user, Blog item)
         {
             return await UpdateItemAsync(user, item);
+        }
+
+        public async Task<IEnumerable> FindIndexingAsync(CancellationToken token = default)
+        {
+            return await QueryIndexing().FetchAsync(token);
+        }
+
+        FeedIterator<Blog> QueryIndexing()
+        {
+            var queryString = $"SELECT {IndexingDefinition.Build()} FROM c WHERE {DefaultFilterSql()} ";
+                              
+            var query = BuildDocumentQuery(queryString);
+            return query;
         }
 
         #region Cosmos

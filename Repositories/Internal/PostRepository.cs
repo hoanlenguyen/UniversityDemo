@@ -1,5 +1,8 @@
-﻿using System;
+﻿using Microsoft.Azure.Cosmos;
+using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using UniversityDemo.DataContext.Cosmos;
 using UniversityDemo.Identity;
@@ -16,6 +19,15 @@ namespace UniversityDemo.Repositories.Internal
         {
             this.cosmosDb = cosmosDb;
         }
+
+        private static QueryDefinition<Post> IndexingDefinition =>
+        QueryDefinition<Post>.Select
+            .Field(q => q.Id)
+            .Field(q => q.Title)
+            .Field(q=>q.CoverImagePath)
+            .Field(q=>q.Meta)
+            .Field(q=>q.BlogId)
+            .Field(q => q.Views);
 
         public async Task<bool> DeleteAsync(UserInfo user, params string[] ids)
         {
@@ -46,6 +58,20 @@ namespace UniversityDemo.Repositories.Internal
         public async Task<Post> UpdateAsync(UserInfo user, Post item)
         {
             return await UpdateItemAsync(user, item);
+        }
+
+        public async Task<List<Post>> FindIndexingAsync(string blogId = null, CancellationToken token = default)
+        {
+            return await QueryIndexing(blogId).FetchAsync(token);
+        }
+
+        FeedIterator<Post> QueryIndexing(string blogId=null)
+        {
+            var queryString = $"SELECT {IndexingDefinition.Build()} FROM c WHERE {DefaultFilterSql()} " +
+                             (string.IsNullOrEmpty(blogId)? "": $"AND c.blogId='{blogId}'");
+
+            var query = BuildDocumentQuery(queryString);
+            return query;
         }
 
         #region Cosmos

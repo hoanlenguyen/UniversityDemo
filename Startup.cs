@@ -71,6 +71,7 @@ namespace UniversityDemo
             services.AddScoped<StudentService>();
 
             services.AddScoped<IPostRepository, PostRepository>();
+            services.AddScoped<IPostService, PostService>();
             services.AddScoped<PostService>();
 
             services.AddScoped<IBlogRepository, BlogRepository>();

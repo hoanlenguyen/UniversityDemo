@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using System;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -15,7 +16,8 @@ namespace UniversityDemo.BaseEntities
         [Key]
         public string Id { get; set; }
 
-        [JsonProperty(PropertyName = "meta")]
+        [JsonProperty(PropertyName = "meta", NullValueHandling = NullValueHandling.Ignore)]
+        [DefaultValue(null)]
         public Meta Meta { get; set; } = new Meta();
 
         [JsonProperty(PropertyName = "type")]
