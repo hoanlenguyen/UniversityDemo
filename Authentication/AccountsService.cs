@@ -58,9 +58,9 @@ namespace UniversityDemo.Authentication
                 var user = await _userManager.FindByEmailAsync(input.Email);
                 return new JsonResult(new Dictionary<string, object>
                     {
-                        { "access_token", GetAccessToken(input.Email) },
-                        { "id_token", GetIdToken(user) },
-                        { "id", user.Id }
+                        { "userId", user.Id },
+                        { "accessToken", GetAccessToken(input.Email) },
+                        { "idToken", GetIdToken(user) }
                     });
             }
             return new JsonResult("Unable to sign in") { StatusCode = 401 };

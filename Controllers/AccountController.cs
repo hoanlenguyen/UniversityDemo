@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using UniversityDemo.Authentication;
@@ -44,7 +45,7 @@ namespace UniversityDemo.Controllers
             return Ok();
         }
 
-        //[Authorize]
+        [Authorize]
         [HttpGet("current/userinfo")]
         public async Task<IActionResult> GetUserInfo()
         {
