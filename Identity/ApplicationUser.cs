@@ -43,17 +43,16 @@ namespace UniversityDemo.Identity
         public virtual ApplicationUser User { get; set; }
     }
 
-    public interface IPrincipal
+    public static class ApplicationUserExtension
     {
-        IIdentity Identity { get; }
-
-        bool IsInRole(string role);
-    }
-
-    public interface IIdentity
-    {
-        string AuthenticationType { get; }
-        bool IsAuthenticated { get; }
-        string Name { get; }
+        public static UserInfo ToUserInfo(this ApplicationUser user)
+        {
+            return new UserInfo
+            {
+                Id = user.Id,
+                UserName = user.UserName,
+                Email = user.Email
+            };
+        }
     }
 }

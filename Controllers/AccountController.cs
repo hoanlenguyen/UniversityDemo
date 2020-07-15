@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -45,17 +46,10 @@ namespace UniversityDemo.Controllers
             return Ok();
         }
 
-        [Authorize]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpGet("current/userinfo")]
         public async Task<IActionResult> GetUserInfo()
         {
-            //return new JsonResult(
-            //        new Dictionary<string, object>
-            //        {
-            //            { "isAuthenticated",User.Identity.IsAuthenticated },
-            //            { "userId",User.FindFirstValue(ClaimTypes.NameIdentifier) },
-            //            { "userName", User.Identity.Name},
-            //        });
             var accessToken = HttpContext.Request.Headers["Authorization"];
             var user = base.GetUserInfo(User);
             return new JsonResult(

@@ -1,11 +1,12 @@
-﻿using JWT;
-using JWT.Algorithms;
-using JWT.Serializers;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 using System.Threading.Tasks;
 using UniversityDemo.Identity;
 
@@ -40,12 +41,15 @@ namespace UniversityDemo.Authentication
             var result = await _userManager.CreateAsync(user, input.Password);
             if (result.Succeeded)
             {
-                await _signInManager.SignInAsync(user, isPersistent: false);
+                await _signInManager.SignInAsync(user, isPersistent: true);
+                var userInfo = (await _userManager.FindByEmailAsync(input.Email)).ToUserInfo();
                 return new JsonResult(new Dictionary<string, object>
-                {
-                    { "access_token", GetAccessToken(input.Email) },
-                    { "id_token", GetIdToken(user) }
-                });
+                    {
+                        { "userId", userInfo.Id },
+                        { "userName", userInfo.UserName },
+                        { "email", userInfo.Email },
+                        { "accessToken", GenerateJSONWebToken(userInfo) },
+                    });
             }
             return new JsonResult(false);
         }
@@ -55,12 +59,14 @@ namespace UniversityDemo.Authentication
             var result = await _signInManager.PasswordSignInAsync(input.Email, input.Password, false, false);
             if (result.Succeeded)
             {
-                var user = await _userManager.FindByEmailAsync(input.Email);
+                var userInfo = (await _userManager.FindByEmailAsync(input.Email)).ToUserInfo();
+                //need logout??
                 return new JsonResult(new Dictionary<string, object>
                     {
-                        { "userId", user.Id },
-                        { "accessToken", GetAccessToken(input.Email) },
-                        { "idToken", GetIdToken(user) }
+                        { "userId", userInfo.Id },
+                        { "userName", userInfo.UserName },
+                        { "email", userInfo.Email },
+                        { "accessToken", GenerateJSONWebToken(userInfo) },
                     });
             }
             return new JsonResult("Unable to sign in") { StatusCode = 401 };
@@ -71,50 +77,30 @@ namespace UniversityDemo.Authentication
             await _signInManager.SignOutAsync();
         }
 
-        private string GetAccessToken(string Email)
+        private string GenerateJSONWebToken(UserInfo userInfo)
         {
-            var payload = new Dictionary<string, object>
-              {
-                { "sub", Email },
-                { "email", Email }
-              };
-            return GetToken(payload);
+            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_options.SecretKey));
+            var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
+            var claims = new[]
+            {
+                new Claim(JwtRegisteredClaimNames.Sub, userInfo.UserName),
+                new Claim(JwtRegisteredClaimNames.Email, userInfo.Email),
+                new Claim(JwtRegisteredClaimNames.AuthTime,DateTime.UtcNow.ToString("yyyy-MM-dd-HH:mm:ss")),
+                new Claim(JwtRegisteredClaimNames.Jti, userInfo.Id)
+            };
+            var token = new JwtSecurityToken(
+              _options.Issuer,
+              _options.Audience,
+              claims,
+              expires: DateTime.UtcNow.AddMinutes(120),
+              signingCredentials: credentials);
+
+            return new JwtSecurityTokenHandler().WriteToken(token);
         }
 
-        private string GetToken(Dictionary<string, object> payload)
-        {
-            var secret = _options.SecretKey;
-
-            payload.Add("iss", _options.Issuer);
-            payload.Add("aud", _options.Audience);
-            payload.Add("nbf", ConvertToUnixTimestamp(DateTime.Now));
-            payload.Add("iat", ConvertToUnixTimestamp(DateTime.Now));
-            payload.Add("exp", ConvertToUnixTimestamp(DateTime.Now.AddDays(7)));
-            IJwtAlgorithm algorithm = new HMACSHA256Algorithm();
-            IJsonSerializer serializer = new JsonNetSerializer();
-            IBase64UrlEncoder urlEncoder = new JwtBase64UrlEncoder();
-            IJwtEncoder encoder = new JwtEncoder(algorithm, serializer, urlEncoder);
-
-            return encoder.Encode(payload, secret);
-        }
-
-        private string GetIdToken(IdentityUser user)
-        {
-            var payload = new Dictionary<string, object>
-          {
-            { "id", user.Id },
-            { "sub", user.Email },
-            { "email", user.Email },
-            { "emailConfirmed", user.EmailConfirmed },
-          };
-            return GetToken(payload);
-        }
-
-        private static double ConvertToUnixTimestamp(DateTime date)
-        {
-            DateTime origin = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
-            TimeSpan diff = date.ToUniversalTime() - origin;
-            return Math.Floor(diff.TotalSeconds);
-        }
+        //public string GetSecretKey()
+        //{
+        //    return _options.SecretKey;
+        //}
     }
 }

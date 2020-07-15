@@ -10,5 +10,7 @@ namespace UniversityDemo.Authentication
         Task<JsonResult> Login(Credentials input);
 
         Task Logout();
+
+        //string GetSecretKey();
     }
 }

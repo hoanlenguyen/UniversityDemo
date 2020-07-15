@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using System.Threading.Tasks;
 using UniversityDemo.Controllers.BaseControllers;
@@ -48,6 +49,7 @@ namespace UniversityDemo.Controllers
             return Ok(await blogService.DeleteAsync(GetUserInfo(User), id));
         }
 
+        [Authorize]
         [HttpGet("all")]
         public async Task<IActionResult> GetAllAsync()
         {

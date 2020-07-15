@@ -20,7 +20,6 @@ namespace UniversityDemo.Data
         public DbSet<Student> Students { get; set; }
         public DbSet<Enrollment> Enrollments { get; set; }
         public DbSet<Course> Courses { get; set; }
-        //public DbSet<Blog> Blogs { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -46,46 +45,46 @@ namespace UniversityDemo.Data
             {
                 b.ToTable("Users");
 
-                //// Each User can have many UserClaims
-                //b.HasMany(e => e.Claims)
-                //    .WithOne(e => e.User)
-                //    .HasForeignKey(uc => uc.UserId)
-                //    .IsRequired();
+                // Each User can have many UserClaims
+                b.HasMany(e => e.Claims)
+                    .WithOne(e => e.User)
+                    .HasForeignKey(uc => uc.UserId)
+                    .IsRequired();
 
-                //// Each User can have many UserLogins
-                //b.HasMany(e => e.Logins)
-                //    .WithOne(e => e.User)
-                //    .HasForeignKey(ul => ul.UserId)
-                //    .IsRequired();
+                // Each User can have many UserLogins
+                b.HasMany(e => e.Logins)
+                    .WithOne(e => e.User)
+                    .HasForeignKey(ul => ul.UserId)
+                    .IsRequired();
 
-                //// Each User can have many UserTokens
-                //b.HasMany(e => e.Tokens)
-                //    .WithOne(e => e.User)
-                //    .HasForeignKey(ut => ut.UserId)
-                //    .IsRequired();
+                // Each User can have many UserTokens
+                b.HasMany(e => e.Tokens)
+                    .WithOne(e => e.User)
+                    .HasForeignKey(ut => ut.UserId)
+                    .IsRequired();
 
-                //// Each User can have many entries in the UserRole join table
-                //b.HasMany(e => e.UserRoles)
-                //    .WithOne(e => e.User)
-                //    .HasForeignKey(ur => ur.UserId)
-                //    .IsRequired();
+                // Each User can have many entries in the UserRole join table
+                b.HasMany(e => e.UserRoles)
+                    .WithOne(e => e.User)
+                    .HasForeignKey(ur => ur.UserId)
+                    .IsRequired();
             });
 
             modelBuilder.Entity<ApplicationRole>(b =>
             {
                 b.ToTable("Roles");
 
-                //// Each Role can have many entries in the UserRole join table
-                //b.HasMany(e => e.UserRoles)
-                //    .WithOne(e => e.Role)
-                //    .HasForeignKey(ur => ur.RoleId)
-                //    .IsRequired();
+                // Each Role can have many entries in the UserRole join table
+                b.HasMany(e => e.UserRoles)
+                    .WithOne(e => e.Role)
+                    .HasForeignKey(ur => ur.RoleId)
+                    .IsRequired();
 
-                //// Each Role can have many associated RoleClaims
-                //b.HasMany(e => e.RoleClaims)
-                //    .WithOne(e => e.Role)
-                //    .HasForeignKey(rc => rc.RoleId)
-                //    .IsRequired();
+                // Each Role can have many associated RoleClaims
+                b.HasMany(e => e.RoleClaims)
+                    .WithOne(e => e.Role)
+                    .HasForeignKey(rc => rc.RoleId)
+                    .IsRequired();
             });
 
             modelBuilder.Entity<ApplicationUserClaim>().ToTable("UserClaims");
