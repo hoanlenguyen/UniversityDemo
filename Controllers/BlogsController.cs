@@ -1,9 +1,7 @@
-﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using System.Threading.Tasks;
 using UniversityDemo.Controllers.BaseControllers;
-using UniversityDemo.Identity;
 using UniversityDemo.Models;
 using UniversityDemo.Services;
 

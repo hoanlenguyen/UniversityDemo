@@ -56,12 +56,14 @@ namespace UniversityDemo.Controllers
             //            { "userId",User.FindFirstValue(ClaimTypes.NameIdentifier) },
             //            { "userName", User.Identity.Name},
             //        });
+            var accessToken = HttpContext.Request.Headers["Authorization"];
             var user = base.GetUserInfo(User);
             return new JsonResult(
                     new Dictionary<string, object>
                     {
                         { "userId",user.Id },
                         { "userName", user.UserName},
+                        { "accessToken", accessToken},
                     });
         }
 
