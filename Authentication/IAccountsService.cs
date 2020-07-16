@@ -13,8 +13,8 @@ namespace UniversityDemo.Authentication
 
         //string GetSecretKey();
 
-        Task CreateAdminUserAndRole();
+        //Task CreateAdminUserAndRole();
 
-        Task AddRolesToUser(string userName, bool createRoleIfNotExist = true, params string[] roleNames);
+        Task AddRolesToUser(string userName, bool createRoleIfNotExists = true, params string[] roleNames);
     }
 }

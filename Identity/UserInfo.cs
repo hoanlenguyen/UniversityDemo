@@ -1,4 +1,6 @@
-﻿namespace UniversityDemo.Identity
+﻿using System.Collections.Generic;
+
+namespace UniversityDemo.Identity
 {
     public class UserInfo : IUserInfo
     {
@@ -8,6 +10,7 @@
 
         public string Email { get; set; }
 
+        public List<string> Roles = new List<string>();
         //UserRoles
     }
 }

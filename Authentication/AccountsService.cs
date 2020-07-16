@@ -38,7 +38,7 @@ namespace UniversityDemo.Authentication
 
         public async Task<JsonResult> Register([FromForm]RegisterCredentials input)
         {
-            var user = new ApplicationUser(input.UserName,input.Email);
+            var user = new ApplicationUser(input.UserName, input.Email);
             var result = await _userManager.CreateAsync(user, input.Password);
             if (result.Succeeded)
             {
@@ -63,6 +63,7 @@ namespace UniversityDemo.Authentication
                 var user = await _userManager.FindByNameAsync(input.UserName);
                 var userInfo = user.ToUserInfo();
                 var roles = await _userManager.GetRolesAsync(user);
+                userInfo.Roles = new List<string>(roles);
                 //need logout??
                 return new JsonResult(new Dictionary<string, object>
                     {
@@ -81,27 +82,6 @@ namespace UniversityDemo.Authentication
             await _signInManager.SignOutAsync();
         }
 
-        private string GenerateJSONWebToken(UserInfo userInfo)
-        {
-            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_options.SecretKey));
-            var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
-            var claims = new[]
-            {
-                new Claim(JwtRegisteredClaimNames.Sub, userInfo.UserName),
-                new Claim(JwtRegisteredClaimNames.Email, userInfo.Email),
-                new Claim(JwtRegisteredClaimNames.AuthTime,DateTime.UtcNow.ToString("yyyy-MM-dd-HH:mm:ss")),
-                new Claim(JwtRegisteredClaimNames.Jti, userInfo.Id)
-            };
-            var token = new JwtSecurityToken(
-              _options.Issuer,
-              _options.Audience,
-              claims,
-              expires: DateTime.UtcNow.AddMinutes(120),
-              signingCredentials: credentials);
-
-            return new JwtSecurityTokenHandler().WriteToken(token);
-        }
-
         public async Task CreateAdminUserAndRole()
         {
             bool checkExist = await _roleManager.RoleExistsAsync(RoleNames.Admin);
@@ -109,20 +89,19 @@ namespace UniversityDemo.Authentication
             {
                 var role = new ApplicationRole();
                 role.Name = RoleNames.Admin;
-                var result= await _roleManager.CreateAsync(role);
+                var result = await _roleManager.CreateAsync(role);
                 if (result.Succeeded)
                 {
                     var user = new ApplicationUser("SuperAdmin", "admin@example.com");
                     string password = "123qwe!@#QWE";
                     var createResult = await _userManager.CreateAsync(user, password);
-                    if(createResult.Succeeded)
+                    if (createResult.Succeeded)
                     {
                         var addResult = await _userManager.AddToRoleAsync(user, RoleNames.Admin);
                         if (!addResult.Succeeded)
                             throw new Exception("Create unsuccessful");
                     }
                 }
-
             }
         }
 
@@ -137,7 +116,7 @@ namespace UniversityDemo.Authentication
                     foreach (var roleName in roleNames)
                     {
                         bool checkExist = await _roleManager.RoleExistsAsync(roleName);
-                        if (!checkExist&& createRoleIfNotExist)
+                        if (!checkExist && createRoleIfNotExist)
                         {
                             var role = new ApplicationRole();
                             role.Name = roleName;
@@ -149,7 +128,6 @@ namespace UniversityDemo.Authentication
                         {
                             createdRoles.Add(roleName);
                         }
-                            
                     }
                     await _userManager.AddToRolesAsync(user, createdRoles);
                 }
@@ -157,12 +135,32 @@ namespace UniversityDemo.Authentication
             catch (Exception e)
             {
                 throw new Exception(e.Message);
-            }            
+            }
         }
 
-        //public string GetSecretKey()
-        //{
-        //    return _options.SecretKey;
-        //}
+        private string GenerateJSONWebToken(UserInfo userInfo)
+        {
+            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_options.SecretKey));
+            var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
+            var claims = new[]
+            {
+                new Claim(JwtRegisteredClaimNames.Sub, userInfo.UserName),
+                new Claim(JwtRegisteredClaimNames.Email, userInfo.Email),
+                new Claim(JwtRegisteredClaimNames.AuthTime,DateTime.Now.ToString("yyyy-MM-dd-HH:mm:ss")),
+                new Claim(JwtRegisteredClaimNames.Jti, userInfo.Id),
+            };
+
+            //ClaimsIdentity claimsIdentity = new ClaimsIdentity(claims, "Token");
+            //claimsIdentity.AddClaims(userInfo.Roles.Select(role => new Claim(ClaimTypes.Role, role)));
+
+            var token = new JwtSecurityToken(
+              _options.Issuer,
+              _options.Audience,
+              claims,
+              expires: DateTime.UtcNow.AddMinutes(120),
+              signingCredentials: credentials);
+
+            return new JwtSecurityTokenHandler().WriteToken(token);
+        }
     }
 }

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using UniversityDemo.Models.DTO;
+﻿using UniversityDemo.Models.DTO;
 
 namespace UniversityDemo.Models
 {
@@ -25,7 +21,7 @@ namespace UniversityDemo.Models
                 Title = entity.Title,
                 Views = entity.Views,
                 CoverImagePath = entity.CoverImagePath,
-                BlogId=entity.BlogId
+                BlogId = entity.BlogId
             };
         }
     }

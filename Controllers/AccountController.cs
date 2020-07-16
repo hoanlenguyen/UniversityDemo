@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using UniversityDemo.Authentication;
-using UniversityDemo.Authorization;
 using UniversityDemo.Controllers.BaseControllers;
 
 namespace UniversityDemo.Controllers
@@ -63,9 +62,9 @@ namespace UniversityDemo.Controllers
         }
 
         [HttpPost("{userName}/AssignRoles")]
-        public async Task<IActionResult> AssignRolesToUser(string userName, bool createRoleIfNotExist=true, params string[] roleNames)
+        public async Task<IActionResult> AssignRolesToUser(string userName, bool createRoleIfNotExists = true, params string[] roleNames)
         {
-            await _accountsService.AddRolesToUser(userName, createRoleIfNotExist, roleNames);
+            await _accountsService.AddRolesToUser(userName, createRoleIfNotExists, roleNames);
             return Ok();
         }
 

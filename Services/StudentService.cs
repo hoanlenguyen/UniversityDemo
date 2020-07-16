@@ -18,7 +18,7 @@ namespace UniversityDemo.Services
         public async Task<Student> Get(int id)
         {
             return context.Students
-                            .Include(p=>p.Enrollments)
+                            .Include(p => p.Enrollments)
                             .SingleOrDefault(p => p.Id == id);
         }
     }

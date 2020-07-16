@@ -57,7 +57,7 @@ namespace UniversityDemo.Identity
             {
                 Id = user.Id,
                 UserName = user.UserName,
-                Email = user.Email
+                Email = user.Email                
             };
         }
     }

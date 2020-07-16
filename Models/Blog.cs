@@ -18,6 +18,7 @@ namespace UniversityDemo.Models
         //public List<string> PostIds { get; set; } = new List<string>();
 
         #region reference
+
         [JsonIgnore]
         [DefaultValue(null)]
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
