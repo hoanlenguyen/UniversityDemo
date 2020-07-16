@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using UniversityDemo.Authentication;
+using UniversityDemo.Authorization;
 using UniversityDemo.Controllers.BaseControllers;
 
 namespace UniversityDemo.Controllers
@@ -20,7 +21,7 @@ namespace UniversityDemo.Controllers
         }
 
         [HttpPost("Register")]
-        public async Task<IActionResult> Register([FromBody]Credentials credentials)
+        public async Task<IActionResult> Register([FromBody]RegisterCredentials credentials)
         {
             if (ModelState.IsValid)
             {
@@ -30,7 +31,7 @@ namespace UniversityDemo.Controllers
         }
 
         [HttpPost("Login")]
-        public async Task<IActionResult> Login([FromBody]Credentials credentials)
+        public async Task<IActionResult> Login([FromBody]LoginCredentials credentials)
         {
             if (ModelState.IsValid)
             {
@@ -59,6 +60,13 @@ namespace UniversityDemo.Controllers
                         { "userName", user.UserName},
                         { "accessToken", accessToken},
                     });
+        }
+
+        [HttpPost("{userName}/AssignRoles")]
+        public async Task<IActionResult> AssignRolesToUser(string userName, bool createRoleIfNotExist=true, params string[] roleNames)
+        {
+            await _accountsService.AddRolesToUser(userName, createRoleIfNotExist, roleNames);
+            return Ok();
         }
 
         private JsonResult Error(string message)

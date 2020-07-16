@@ -2,9 +2,12 @@
 
 namespace UniversityDemo.Authentication
 {
-    public class Credentials
+    public class RegisterCredentials
     {
         [Required]
+        [Display(Name = "UserName")]
+        public string UserName { get; set; }
+
         [EmailAddress]
         [DataType(DataType.EmailAddress)]
         [Display(Name = "Email")]

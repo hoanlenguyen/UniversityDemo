@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using UniversityDemo.Data;
 
 namespace UniversityDemo.Migrations
 {
     [DbContext(typeof(DemoDbContext))]
-    partial class DemoDbContextModelSnapshot : ModelSnapshot
+    [Migration("20200715100500_update_UserIdentityRelationships")]
+    partial class update_UserIdentityRelationships
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -217,7 +219,7 @@ namespace UniversityDemo.Migrations
 
             modelBuilder.Entity("UniversityDemo.Models.Course", b =>
                 {
-                    b.Property<int>("CourseId")
+                    b.Property<int>("CourseID")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
@@ -228,39 +230,39 @@ namespace UniversityDemo.Migrations
                     b.Property<string>("Title")
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("CourseId");
+                    b.HasKey("CourseID");
 
                     b.ToTable("Courses");
                 });
 
             modelBuilder.Entity("UniversityDemo.Models.Enrollment", b =>
                 {
-                    b.Property<int>("EnrollmentId")
+                    b.Property<int>("EnrollmentID")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int>("CourseId")
+                    b.Property<int>("CourseID")
                         .HasColumnType("int");
 
                     b.Property<int?>("Grade")
                         .HasColumnType("int");
 
-                    b.Property<int>("StudentId")
+                    b.Property<int>("StudentID")
                         .HasColumnType("int");
 
-                    b.HasKey("EnrollmentId");
+                    b.HasKey("EnrollmentID");
 
-                    b.HasIndex("CourseId");
+                    b.HasIndex("CourseID");
 
-                    b.HasIndex("StudentId");
+                    b.HasIndex("StudentID");
 
                     b.ToTable("Enrollments");
                 });
 
             modelBuilder.Entity("UniversityDemo.Models.Student", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int>("ID")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
@@ -274,11 +276,7 @@ namespace UniversityDemo.Migrations
                     b.Property<string>("LastName")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
+                    b.HasKey("ID");
 
                     b.ToTable("Students");
                 });
@@ -338,13 +336,13 @@ namespace UniversityDemo.Migrations
                 {
                     b.HasOne("UniversityDemo.Models.Course", "Course")
                         .WithMany("Enrollments")
-                        .HasForeignKey("CourseId")
+                        .HasForeignKey("CourseID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("UniversityDemo.Models.Student", "Student")
                         .WithMany("Enrollments")
-                        .HasForeignKey("StudentId")
+                        .HasForeignKey("StudentID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

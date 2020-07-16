@@ -19,7 +19,7 @@ namespace UniversityDemo.Services
         {
             return context.Students
                             .Include(p=>p.Enrollments)
-                            .SingleOrDefault(p => p.ID == id);
+                            .SingleOrDefault(p => p.Id == id);
         }
     }
 }

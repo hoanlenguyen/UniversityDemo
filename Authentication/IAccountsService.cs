@@ -5,12 +5,16 @@ namespace UniversityDemo.Authentication
 {
     public interface IAccountsService
     {
-        Task<JsonResult> Register(Credentials input);
+        Task<JsonResult> Register(RegisterCredentials input);
 
-        Task<JsonResult> Login(Credentials input);
+        Task<JsonResult> Login(LoginCredentials input);
 
         Task Logout();
 
         //string GetSecretKey();
+
+        Task CreateAdminUserAndRole();
+
+        Task AddRolesToUser(string userName, bool createRoleIfNotExist = true, params string[] roleNames);
     }
 }

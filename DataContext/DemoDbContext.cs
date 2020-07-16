@@ -29,7 +29,7 @@ namespace UniversityDemo.Data
             {
                 b.HasMany(b => b.Enrollments)
                 .WithOne(q => q.Student)
-                .HasForeignKey(q => q.StudentID)
+                .HasForeignKey(q => q.StudentId)
                 .IsRequired();
             });
 
@@ -37,7 +37,7 @@ namespace UniversityDemo.Data
             {
                 b.HasMany(b => b.Enrollments)
                 .WithOne(q => q.Course)
-                .HasForeignKey(q => q.CourseID)
+                .HasForeignKey(q => q.CourseId)
                 .IsRequired();
             });
 

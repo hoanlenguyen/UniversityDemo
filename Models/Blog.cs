@@ -13,9 +13,9 @@ namespace UniversityDemo.Models
         [MaxLength((int)Length.Url)]
         public string Url { get; set; }
 
-        [JsonProperty(PropertyName = "postIds")]
-        [DefaultValue(null)]
-        public List<string> PostIds { get; set; } = new List<string>();
+        //[JsonProperty(PropertyName = "postIds")]
+        //[DefaultValue(null)]
+        //public List<string> PostIds { get; set; } = new List<string>();
 
         #region reference
         [JsonIgnore]

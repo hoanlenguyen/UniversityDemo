@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using System.Threading.Tasks;
+using UniversityDemo.Authorization;
 using UniversityDemo.Controllers.BaseControllers;
 using UniversityDemo.Models;
 using UniversityDemo.Services;
@@ -9,6 +10,8 @@ using UniversityDemo.Services;
 namespace UniversityDemo.Controllers
 {
     [ApiController]
+    [Authorize(Roles = RoleNames.Member)]
+    [Authorize(Roles = RoleNames.SuperAdmin)]
     [Route("api/[controller]")]
     public class BlogsController : BaseApiController
     {

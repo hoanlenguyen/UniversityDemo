@@ -8,6 +8,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using UniversityDemo.Authorization;
 using UniversityDemo.Identity;
 
 namespace UniversityDemo.Authentication
@@ -35,14 +36,14 @@ namespace UniversityDemo.Authentication
             _options = optionsAccessor.Value;
         }
 
-        public async Task<JsonResult> Register([FromForm]Credentials input)
+        public async Task<JsonResult> Register([FromForm]RegisterCredentials input)
         {
-            var user = new ApplicationUser { UserName = input.Email, Email = input.Email };
+            var user = new ApplicationUser(input.UserName,input.Email);
             var result = await _userManager.CreateAsync(user, input.Password);
             if (result.Succeeded)
             {
                 await _signInManager.SignInAsync(user, isPersistent: true);
-                var userInfo = (await _userManager.FindByEmailAsync(input.Email)).ToUserInfo();
+                var userInfo = (await _userManager.FindByNameAsync(input.UserName)).ToUserInfo();
                 return new JsonResult(new Dictionary<string, object>
                     {
                         { "userId", userInfo.Id },
@@ -54,18 +55,21 @@ namespace UniversityDemo.Authentication
             return new JsonResult(false);
         }
 
-        public async Task<JsonResult> Login(Credentials input)
+        public async Task<JsonResult> Login([FromForm]LoginCredentials input)
         {
-            var result = await _signInManager.PasswordSignInAsync(input.Email, input.Password, false, false);
+            var result = await _signInManager.PasswordSignInAsync(input.UserName, input.Password, false, false);
             if (result.Succeeded)
             {
-                var userInfo = (await _userManager.FindByEmailAsync(input.Email)).ToUserInfo();
+                var user = await _userManager.FindByNameAsync(input.UserName);
+                var userInfo = user.ToUserInfo();
+                var roles = await _userManager.GetRolesAsync(user);
                 //need logout??
                 return new JsonResult(new Dictionary<string, object>
                     {
                         { "userId", userInfo.Id },
                         { "userName", userInfo.UserName },
                         { "email", userInfo.Email },
+                        { "roles", roles },
                         { "accessToken", GenerateJSONWebToken(userInfo) },
                     });
             }
@@ -96,6 +100,64 @@ namespace UniversityDemo.Authentication
               signingCredentials: credentials);
 
             return new JwtSecurityTokenHandler().WriteToken(token);
+        }
+
+        public async Task CreateAdminUserAndRole()
+        {
+            bool checkExist = await _roleManager.RoleExistsAsync(RoleNames.Admin);
+            if (!checkExist)
+            {
+                var role = new ApplicationRole();
+                role.Name = RoleNames.Admin;
+                var result= await _roleManager.CreateAsync(role);
+                if (result.Succeeded)
+                {
+                    var user = new ApplicationUser("SuperAdmin", "admin@example.com");
+                    string password = "123qwe!@#QWE";
+                    var createResult = await _userManager.CreateAsync(user, password);
+                    if(createResult.Succeeded)
+                    {
+                        var addResult = await _userManager.AddToRoleAsync(user, RoleNames.Admin);
+                        if (!addResult.Succeeded)
+                            throw new Exception("Create unsuccessful");
+                    }
+                }
+
+            }
+        }
+
+        public async Task AddRolesToUser(string userName, bool createRoleIfNotExist = true, params string[] roleNames)
+        {
+            try
+            {
+                var user = await _userManager.FindByNameAsync(userName);
+                var createdRoles = new List<string>();
+                if (user != null)
+                {
+                    foreach (var roleName in roleNames)
+                    {
+                        bool checkExist = await _roleManager.RoleExistsAsync(roleName);
+                        if (!checkExist&& createRoleIfNotExist)
+                        {
+                            var role = new ApplicationRole();
+                            role.Name = roleName;
+                            var result = await _roleManager.CreateAsync(role);
+                            if (result.Succeeded)
+                                createdRoles.Add(roleName);
+                        }
+                        else if (checkExist)
+                        {
+                            createdRoles.Add(roleName);
+                        }
+                            
+                    }
+                    await _userManager.AddToRolesAsync(user, createdRoles);
+                }
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }            
         }
 
         //public string GetSecretKey()

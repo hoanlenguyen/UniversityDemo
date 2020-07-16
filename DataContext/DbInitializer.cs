@@ -51,18 +51,18 @@ namespace UniversityDemo.Data
 
             var enrollments = new Enrollment[]
             {
-            new Enrollment{StudentID=1,CourseID=1,Grade=Grade.A},
-            new Enrollment{StudentID=1,CourseID=3,Grade=Grade.C},
-            new Enrollment{StudentID=1,CourseID=4,Grade=Grade.B},
-            new Enrollment{StudentID=2,CourseID=4,Grade=Grade.B},
-            new Enrollment{StudentID=2,CourseID=5,Grade=Grade.F},
-            new Enrollment{StudentID=2,CourseID=3,Grade=Grade.F},
-            new Enrollment{StudentID=3,CourseID=1},
-            new Enrollment{StudentID=4,CourseID=3},
-            new Enrollment{StudentID=4,CourseID=6,Grade=Grade.F},
-            new Enrollment{StudentID=5,CourseID=7,Grade=Grade.C},
-            new Enrollment{StudentID=6,CourseID=7},
-            new Enrollment{StudentID=7,CourseID=2,Grade=Grade.A},
+            new Enrollment{StudentId=1,CourseId=1,Grade=Grade.A},
+            new Enrollment{StudentId=1,CourseId=3,Grade=Grade.C},
+            new Enrollment{StudentId=1,CourseId=4,Grade=Grade.B},
+            new Enrollment{StudentId=2,CourseId=4,Grade=Grade.B},
+            new Enrollment{StudentId=2,CourseId=5,Grade=Grade.F},
+            new Enrollment{StudentId=2,CourseId=3,Grade=Grade.F},
+            new Enrollment{StudentId=3,CourseId=1},
+            new Enrollment{StudentId=4,CourseId=3},
+            new Enrollment{StudentId=4,CourseId=6,Grade=Grade.F},
+            new Enrollment{StudentId=5,CourseId=7,Grade=Grade.C},
+            new Enrollment{StudentId=6,CourseId=7},
+            new Enrollment{StudentId=7,CourseId=2,Grade=Grade.A},
             };
             foreach (Enrollment e in enrollments)
             {

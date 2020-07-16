@@ -4,15 +4,16 @@ namespace UniversityDemo.Models
 {
     public class Enrollment
     {
-        public int EnrollmentID { get; set; }
-        public int CourseID { get; set; }
-        public int StudentID { get; set; }
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public int EnrollmentId { get; set; }
+        public int CourseId { get; set; }
+        public int StudentId { get; set; }
         public Grade? Grade { get; set; }
 
-        [ForeignKey(nameof(CourseID))]
+        [ForeignKey(nameof(CourseId))]
         public virtual Course Course { get; set; }
 
-        [ForeignKey(nameof(StudentID))]
+        [ForeignKey(nameof(StudentId))]
         public virtual Student Student { get; set; }
     }
 
