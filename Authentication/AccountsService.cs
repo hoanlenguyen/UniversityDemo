@@ -144,10 +144,11 @@ namespace UniversityDemo.Authentication
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
             var claims = new[]
             {
-                new Claim(JwtRegisteredClaimNames.Sub, userInfo.UserName),
+                new Claim(JwtRegisteredClaimNames.Sub, userInfo.Id),
+                new Claim(JwtRegisteredClaimNames.Sid, userInfo.UserName),
                 new Claim(JwtRegisteredClaimNames.Email, userInfo.Email),
-                new Claim(JwtRegisteredClaimNames.AuthTime,DateTime.Now.ToString("yyyy-MM-dd-HH:mm:ss")),
-                new Claim(JwtRegisteredClaimNames.Jti, userInfo.Id),
+                new Claim(JwtRegisteredClaimNames.AuthTime,DateTime.UtcNow.ToUniversalTime().ToString()),
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),                
             };
 
             //ClaimsIdentity claimsIdentity = new ClaimsIdentity(claims, "Token");

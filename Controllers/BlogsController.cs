@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using System.Threading.Tasks;
 using UniversityDemo.Controllers.BaseControllers;
@@ -7,6 +8,7 @@ using UniversityDemo.Services;
 
 namespace UniversityDemo.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class BlogsController : BaseApiController
