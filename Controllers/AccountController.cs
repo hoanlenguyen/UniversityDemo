@@ -46,7 +46,8 @@ namespace UniversityDemo.Controllers
             return Ok();
         }
 
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [Authorize]
+        //[Authorize]
         [HttpGet("current/userinfo")]
         public async Task<IActionResult> GetUserInfo()
         {
@@ -57,7 +58,7 @@ namespace UniversityDemo.Controllers
                     {
                         { "userId",user.Id },
                         { "userName", user.UserName},
-                        { "accessToken", accessToken},
+                        { "email", user.Email }
                     });
         }
 

@@ -13,7 +13,8 @@ namespace UniversityDemo.Controllers.BaseControllers
                 new UserInfo
                 {
                     Id = User.FindFirstValue(ClaimTypes.NameIdentifier),
-                    UserName = User.Identity.Name
+                    UserName = User.Identity.Name ?? User.FindFirstValue(ClaimTypes.Name),
+                    Email= User.FindFirstValue(ClaimTypes.Email)
                 }
                 : new UserInfo();
         }

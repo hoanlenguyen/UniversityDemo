@@ -43,12 +43,14 @@ namespace UniversityDemo
 
             services.AddHttpContextAccessor();
 
-            services.Configure<JWTSettings>(Configuration.GetSection("JWTSettings"));
+            services.Configure<JWTSettings>(Configuration.GetSection(nameof(JWTSettings)));
 
-            services.AddAuthentication(x =>
+            //services.AddAuthentication("Basic");
+            //https://stackoverflow.com/questions/46938248/asp-net-core-2-0-combining-cookies-and-bearer-authorization-for-the-same-endpoin/46942760#46942760
+
+            services.AddAuthentication(options =>
             {
-                x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                //x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
             })
             .AddJwtBearer(options =>
              {

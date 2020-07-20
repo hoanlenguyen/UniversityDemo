@@ -33,6 +33,8 @@
     <Compile Remove="Migrations\20200703074909_add_blogs_addGuidId.Designer.cs" />
     <Compile Remove="Migrations\20200703075559_add_blogs_addGuidId.cs" />
     <Compile Remove="Migrations\20200703075559_add_blogs_addGuidId.Designer.cs" />
+    <Compile Remove="Migrations\20200718025853_aaaa.cs" />
+    <Compile Remove="Migrations\20200718025853_aaaa.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>
