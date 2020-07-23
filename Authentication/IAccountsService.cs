@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace UniversityDemo.Authentication
@@ -11,9 +12,9 @@ namespace UniversityDemo.Authentication
 
         Task Logout();
 
-        //string GetSecretKey();
+        Task<bool> CreateRoleAsync(string roleName);
 
-        //Task CreateAdminUserAndRole();
+        Task<List<string>> GetUserRolesByUserId(string userId);
 
         Task<bool> AddRolesToUser(string userId, bool createRoleIfNotExists = true, params string[] roleNames);
     }

@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -11,11 +10,11 @@ namespace UniversityDemo.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class AccountController : BaseApiController
+    public class AccountsController : BaseApiController
     {
         private readonly IAccountsService _accountsService;
 
-        public AccountController(IAccountsService accountsService)
+        public AccountsController(IAccountsService accountsService)
         {
             _accountsService = accountsService;
         }
@@ -62,11 +61,17 @@ namespace UniversityDemo.Controllers
                     });
         }
 
-        [HttpPost("{userId}/AssignRoles")]
+        [HttpPost("{userId}/Assign/Roles")]
         public async Task<IActionResult> AssignRolesToUser(string userId, bool createRoleIfNotExists = true, params string[] roleNames)
         {
             await _accountsService.AddRolesToUser(userId, createRoleIfNotExists, roleNames);
             return Ok();
+        }
+
+        [HttpGet("{userId}/roles")]
+        public async Task<IActionResult> GetUserRoles(string userId)
+        {
+            return Ok(await _accountsService.GetUserRolesByUserId(userId));
         }
 
         private JsonResult Error(string message)

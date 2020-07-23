@@ -21,21 +21,36 @@ namespace UniversityDemo
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
+        public Startup(IConfiguration configuration, IWebHostEnvironment env)
         {
             Configuration = configuration;
+            Env = env;
         }
 
         public IConfiguration Configuration { get; }
 
+        private IWebHostEnvironment Env { get; }
+
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<DemoDbContext>(options =>
-                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+            if (Env.IsDevelopment())
+            {
+                services.AddDbContext<DemoDbContext>(options =>
+                options.UseSqlServer(Configuration["ConnectionStrings:DefaultConnection"]));
 
-            services.AddSingleton<CosmosDbService>(
+                services.AddSingleton<CosmosDbService>(
                 InitializeCosmosClientInstanceAsync(
                     Configuration.GetSection("CosmosDb")).GetAwaiter().GetResult());
+            }
+            else
+            {
+                services.AddDbContext<DemoDbContext>(options =>
+                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+
+                services.AddSingleton<CosmosDbService>(
+                InitializeCosmosClientInstanceAsync(
+                    Configuration.GetSection("CosmosDb")).GetAwaiter().GetResult());
+            }
 
             services.AddIdentity<ApplicationUser, ApplicationRole>()
                 .AddDefaultTokenProviders()
@@ -46,6 +61,7 @@ namespace UniversityDemo
             services.Configure<JWTSettings>(Configuration.GetSection(nameof(JWTSettings)));
 
             //services.AddAuthentication("Basic");
+            //https://www.zehntec.com/blog/permission-based-authorization-in-asp-net-core/
             //https://stackoverflow.com/questions/46938248/asp-net-core-2-0-combining-cookies-and-bearer-authorization-for-the-same-endpoin/46942760#46942760
 
             services.AddAuthentication(options =>
@@ -71,6 +87,8 @@ namespace UniversityDemo
             services.AddAutoMapper(typeof(Startup));
 
             services.AddBusinessServices();
+
+            services.AddPermissionServices();
 
             services.AddTestInjectionServices();
 

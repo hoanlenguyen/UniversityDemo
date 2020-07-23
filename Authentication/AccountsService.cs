@@ -82,27 +82,18 @@ namespace UniversityDemo.Authentication
             await _signInManager.SignOutAsync();
         }
 
-        public async Task CreateAdminUserAndRole()
+        public async Task<bool> CreateRoleAsync(string roleName)
         {
+            if (string.IsNullOrEmpty(roleName))
+                throw new Exception("Role name must not be null or empty");
+
             bool checkExist = await _roleManager.RoleExistsAsync(RoleNames.Admin);
-            if (!checkExist)
-            {
-                var role = new ApplicationRole();
-                role.Name = RoleNames.Admin;
-                var result = await _roleManager.CreateAsync(role);
-                if (result.Succeeded)
-                {
-                    var user = new ApplicationUser("SuperAdmin", "admin@example.com");
-                    string password = "123qwe!@#QWE";
-                    var createResult = await _userManager.CreateAsync(user, password);
-                    if (createResult.Succeeded)
-                    {
-                        var addResult = await _userManager.AddToRoleAsync(user, RoleNames.Admin);
-                        if (!addResult.Succeeded)
-                            throw new Exception("Create unsuccessful");
-                    }
-                }
-            }
+            if (checkExist)
+                throw new Exception("Role name is already existed!");
+
+            var role = new ApplicationRole(roleName);
+            var result = await _roleManager.CreateAsync(role);
+            return result.Succeeded;
         }
 
         public async Task<bool> AddRolesToUser(string userId, bool createRoleIfNotExist = true, params string[] roleNames)
@@ -118,8 +109,7 @@ namespace UniversityDemo.Authentication
                         bool checkExist = await _roleManager.RoleExistsAsync(roleName);
                         if (!checkExist && createRoleIfNotExist)
                         {
-                            var role = new ApplicationRole();
-                            role.Name = roleName;
+                            var role = new ApplicationRole(roleName);
                             var result = await _roleManager.CreateAsync(role);
                             if (result.Succeeded)
                                 createdRoles.Add(roleName);
@@ -139,19 +129,26 @@ namespace UniversityDemo.Authentication
             return true;
         }
 
+        public async Task<List<string>> GetUserRolesByUserId(string userId)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+            var roles = new List<string>(_userManager.GetRolesAsync(user).GetAwaiter().GetResult());
+            return roles;
+        }
+
         private string GenerateJSONWebToken(ApplicationUser user)
         {
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_options.SecretKey));
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
             var roles = new List<string>(_userManager.GetRolesAsync(user).GetAwaiter().GetResult());
-           
+
             var claims = new List<Claim>
             {
                 new Claim(JwtRegisteredClaimNames.Sub, user.Id),
                 new Claim(JwtRegisteredClaimNames.Sid, user.UserName),
                 new Claim(JwtRegisteredClaimNames.Email, user.Email),
                 new Claim(JwtRegisteredClaimNames.AuthTime,DateTime.UtcNow.ToUniversalTime().ToString()),
-                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),                
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
             };
             claims.AddRange(roles.Select(role => new Claim(ClaimsIdentity.DefaultRoleClaimType, role)));
             //ClaimsIdentity claimsIdentity = new ClaimsIdentity(claims, "Token");

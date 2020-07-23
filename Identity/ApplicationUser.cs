@@ -5,12 +5,16 @@ namespace UniversityDemo.Identity
 {
     public class ApplicationUser : IdentityUser
     {
-        public ApplicationUser() { }
-        public ApplicationUser(string userName, string email):base(userName)
+        public ApplicationUser()
+        {
+        }
+
+        public ApplicationUser(string userName, string email) : base(userName)
         {
             UserName = userName;
             Email = email;
         }
+
         public virtual ICollection<ApplicationUserClaim> Claims { get; set; }
         public virtual ICollection<ApplicationUserLogin> Logins { get; set; }
         public virtual ICollection<ApplicationUserToken> Tokens { get; set; }
@@ -19,6 +23,12 @@ namespace UniversityDemo.Identity
 
     public class ApplicationRole : IdentityRole
     {
+        public ApplicationRole()
+        {
+        }
+        public ApplicationRole(string roleName) : base(roleName)
+        {
+        }
         public virtual ICollection<ApplicationUserRole> UserRoles { get; set; }
         public virtual ICollection<ApplicationRoleClaim> RoleClaims { get; set; }
     }
@@ -57,7 +67,7 @@ namespace UniversityDemo.Identity
             {
                 Id = user.Id,
                 UserName = user.UserName,
-                Email = user.Email                
+                Email = user.Email
             };
         }
     }

@@ -1,5 +1,7 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.Extensions.DependencyInjection;
 using UniversityDemo.Authentication;
+using UniversityDemo.Permissions;
 using UniversityDemo.Repositories;
 using UniversityDemo.Repositories.Internal;
 using UniversityDemo.Services;
@@ -20,6 +22,15 @@ namespace UniversityDemo.Extensions
 
             services.AddScoped<IBlogRepository, BlogRepository>();
             services.AddScoped<BlogService>();
+
+            services.AddScoped<RoleService>();
+
+            return services;
+        }
+
+        public static IServiceCollection AddPermissionServices(this IServiceCollection services)
+        {
+            services.AddScoped<IAuthorizationHandler, PermissionAuthorizationHandler>();
             return services;
         }
     }
