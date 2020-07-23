@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using UniversityDemo.Authentication;
+using UniversityDemo.Authorization;
 using UniversityDemo.Controllers.BaseControllers;
 
 namespace UniversityDemo.Controllers
@@ -46,12 +47,11 @@ namespace UniversityDemo.Controllers
             return Ok();
         }
 
-        [Authorize]
-        //[Authorize]
+        [Authorize(Roles = RoleNames.Admin)]
         [HttpGet("current/userinfo")]
         public async Task<IActionResult> GetUserInfo()
         {
-            var accessToken = HttpContext.Request.Headers["Authorization"];
+            //var accessToken = HttpContext.Request.Headers["Authorization"];
             var user = base.GetUserInfo(User);
             return new JsonResult(
                     new Dictionary<string, object>
@@ -62,10 +62,10 @@ namespace UniversityDemo.Controllers
                     });
         }
 
-        [HttpPost("{userName}/AssignRoles")]
-        public async Task<IActionResult> AssignRolesToUser(string userName, bool createRoleIfNotExists = true, params string[] roleNames)
+        [HttpPost("{userId}/AssignRoles")]
+        public async Task<IActionResult> AssignRolesToUser(string userId, bool createRoleIfNotExists = true, params string[] roleNames)
         {
-            await _accountsService.AddRolesToUser(userName, createRoleIfNotExists, roleNames);
+            await _accountsService.AddRolesToUser(userId, createRoleIfNotExists, roleNames);
             return Ok();
         }
 

@@ -5,6 +5,7 @@ using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
@@ -43,13 +44,13 @@ namespace UniversityDemo.Authentication
             if (result.Succeeded)
             {
                 await _signInManager.SignInAsync(user, isPersistent: true);
-                var userInfo = (await _userManager.FindByNameAsync(input.UserName)).ToUserInfo();
+                var createdUser = await _userManager.FindByNameAsync(input.UserName);
                 return new JsonResult(new Dictionary<string, object>
                     {
-                        { "userId", userInfo.Id },
-                        { "userName", userInfo.UserName },
-                        { "email", userInfo.Email },
-                        { "accessToken", GenerateJSONWebToken(userInfo) },
+                        { "userId", createdUser.Id },
+                        { "userName", createdUser.UserName },
+                        { "email", createdUser.Email },
+                        { "accessToken", GenerateJSONWebToken(createdUser) },
                     });
             }
             return new JsonResult(false);
@@ -64,14 +65,13 @@ namespace UniversityDemo.Authentication
                 var userInfo = user.ToUserInfo();
                 var roles = await _userManager.GetRolesAsync(user);
                 userInfo.Roles = new List<string>(roles);
-                //need logout??
                 return new JsonResult(new Dictionary<string, object>
                     {
                         { "userId", userInfo.Id },
                         { "userName", userInfo.UserName },
                         { "email", userInfo.Email },
                         { "roles", roles },
-                        { "accessToken", GenerateJSONWebToken(userInfo) },
+                        { "accessToken", GenerateJSONWebToken(user) },
                     });
             }
             return new JsonResult("Unable to sign in") { StatusCode = 401 };
@@ -105,11 +105,11 @@ namespace UniversityDemo.Authentication
             }
         }
 
-        public async Task AddRolesToUser(string userName, bool createRoleIfNotExist = true, params string[] roleNames)
+        public async Task<bool> AddRolesToUser(string userId, bool createRoleIfNotExist = true, params string[] roleNames)
         {
             try
             {
-                var user = await _userManager.FindByNameAsync(userName);
+                var user = await _userManager.FindByIdAsync(userId);
                 var createdRoles = new List<string>();
                 if (user != null)
                 {
@@ -136,21 +136,24 @@ namespace UniversityDemo.Authentication
             {
                 throw new Exception(e.Message);
             }
+            return true;
         }
 
-        private string GenerateJSONWebToken(UserInfo userInfo)
+        private string GenerateJSONWebToken(ApplicationUser user)
         {
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_options.SecretKey));
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
-            var claims = new[]
+            var roles = new List<string>(_userManager.GetRolesAsync(user).GetAwaiter().GetResult());
+           
+            var claims = new List<Claim>
             {
-                new Claim(JwtRegisteredClaimNames.Sub, userInfo.Id),
-                new Claim(JwtRegisteredClaimNames.Sid, userInfo.UserName),
-                new Claim(JwtRegisteredClaimNames.Email, userInfo.Email),
+                new Claim(JwtRegisteredClaimNames.Sub, user.Id),
+                new Claim(JwtRegisteredClaimNames.Sid, user.UserName),
+                new Claim(JwtRegisteredClaimNames.Email, user.Email),
                 new Claim(JwtRegisteredClaimNames.AuthTime,DateTime.UtcNow.ToUniversalTime().ToString()),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),                
             };
-
+            claims.AddRange(roles.Select(role => new Claim(ClaimsIdentity.DefaultRoleClaimType, role)));
             //ClaimsIdentity claimsIdentity = new ClaimsIdentity(claims, "Token");
             //claimsIdentity.AddClaims(userInfo.Roles.Select(role => new Claim(ClaimTypes.Role, role)));
 

@@ -15,6 +15,6 @@ namespace UniversityDemo.Authentication
 
         //Task CreateAdminUserAndRole();
 
-        Task AddRolesToUser(string userName, bool createRoleIfNotExists = true, params string[] roleNames);
+        Task<bool> AddRolesToUser(string userId, bool createRoleIfNotExists = true, params string[] roleNames);
     }
 }
