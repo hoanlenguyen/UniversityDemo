@@ -31,6 +31,22 @@ namespace UniversityDemo.Extensions
         public static IServiceCollection AddPermissionServices(this IServiceCollection services)
         {
             services.AddScoped<IAuthorizationHandler, PermissionAuthorizationHandler>();
+            services.AddSingleton<IAuthorizationPolicyProvider, PermissionPolicyProvider>();
+            return services;
+        }
+
+        public static IServiceCollection AddAuthorizations(this IServiceCollection services)
+        {
+            services.AddPermissionServices();
+            services.AddAuthorization();
+            //services.AddAuthorization(options =>
+            //{
+            //    options.AddPolicy(RequiredPermissions.Blogs.View, builder =>
+            //    {
+            //        builder.AddRequirements(new PermissionRequirement(RequiredPermissions.Blogs.View));
+            //    });
+            //});
+
             return services;
         }
     }

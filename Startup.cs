@@ -88,7 +88,7 @@ namespace UniversityDemo
 
             services.AddBusinessServices();
 
-            services.AddPermissionServices();
+            services.AddAuthorizations();
 
             services.AddTestInjectionServices();
 

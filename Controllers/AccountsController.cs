@@ -3,8 +3,8 @@ using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using UniversityDemo.Authentication;
-using UniversityDemo.Authorization;
 using UniversityDemo.Controllers.BaseControllers;
+using UniversityDemo.Permissions;
 
 namespace UniversityDemo.Controllers
 {
@@ -46,7 +46,9 @@ namespace UniversityDemo.Controllers
             return Ok();
         }
 
-        [Authorize(Roles = RoleNames.Admin)]
+        //[Authorize(Roles = RoleNames.Admin)]
+        //[Authorize(RequiredPermissions.Blogs.View)]
+        [Authorize(RequiredPermissions.Accounts.View)]
         [HttpGet("current/userinfo")]
         public async Task<IActionResult> GetUserInfo()
         {
