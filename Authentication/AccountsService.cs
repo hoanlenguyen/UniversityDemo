@@ -136,6 +136,17 @@ namespace UniversityDemo.Authentication
             return roles;
         }
 
+        public async Task<bool> ChangeUserPassword(string userName, string password)
+        {
+            var user = await _userManager.FindByNameAsync(userName);
+            if (user == null)
+                return false;
+
+            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+            var result = await _userManager.ResetPasswordAsync(user, token, password);
+            return true;
+        }
+
         private string GenerateJSONWebToken(ApplicationUser user)
         {
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_options.SecretKey));

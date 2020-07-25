@@ -35,13 +35,13 @@ namespace UniversityDemo.Controllers
         [HttpPost("{roleName}/Assign/Permissions")]
         public async Task<IActionResult> AssignPermissionsToRole(string roleName, params string[] permissions)
         {
-            return Ok(await _roleService.AssignPermissionsToRoleAsync(roleName, permissions));
+            return Ok(await _roleService.UpdatePermissionsForRoleAsync(roleName, permissions));
         }
 
-        [HttpGet("Blog/Permissions")]
-        public async Task<IActionResult> GetBlogPermissions()
+        [HttpGet("Claims/Permissions")]
+        public async Task<IActionResult> GetAllPermissions()
         {
-            return Ok(await _roleService.GetBlogPermissions());
+            return Ok(await _roleService.GetAllPermissions());
         }
     }
 }

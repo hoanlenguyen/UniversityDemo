@@ -17,5 +17,7 @@ namespace UniversityDemo.Authentication
         Task<List<string>> GetUserRolesByUserId(string userId);
 
         Task<bool> AddRolesToUser(string userId, bool createRoleIfNotExists = true, params string[] roleNames);
+
+        Task<bool> ChangeUserPassword(string userName, string password);
     }
 }
