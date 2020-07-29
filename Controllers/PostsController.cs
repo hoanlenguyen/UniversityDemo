@@ -48,9 +48,9 @@ namespace UniversityDemo.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllAsync()
+        public async Task<IActionResult> GetAllAsync(int? maxResultCount=null)
         {
-            return Ok(await postService.GetAllAsync());
+            return Ok(await postService.GetAllAsync(maxResultCount));
         }
     }
 }

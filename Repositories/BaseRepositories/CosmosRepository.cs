@@ -34,9 +34,10 @@ namespace UniversityDemo.Repositories.BaseRepositories
             return _requestOptions;
         }
 
-        protected virtual string DefaultSql()
+        protected virtual string DefaultSql(int? maxResultCount = null)
         {
-            return $"SELECT * FROM c WHERE ";
+            return maxResultCount == null ? $"SELECT * FROM c WHERE " :
+                                            $"SELECT TOP {maxResultCount.ToString()} * FROM c WHERE ";
         }
         protected virtual string DefaultFilterSql()
         {
@@ -54,9 +55,9 @@ namespace UniversityDemo.Repositories.BaseRepositories
             return $"{DefaultSql()}{DefaultFilterSql()} AND c.id IN {arrStr}";
         }
 
-        protected virtual string BuildSelectAllQuery(string queryString = null)
+        protected virtual string BuildSelectAllQuery(int? maxResultCount = null)
         {
-            return $"{DefaultSql()}{DefaultFilterSql()} " + queryString;
+            return $"{DefaultSql(maxResultCount)}{DefaultFilterSql()} ";
         }
 
         protected FeedIterator<T> BuildDocumentQuery(string queryString)
@@ -64,9 +65,9 @@ namespace UniversityDemo.Repositories.BaseRepositories
             return this.DefaultContainer.GetItemQueryIterator<T>(new QueryDefinition(queryString), null, _requestOptions);
         }
 
-        protected async Task<List<T>> QueryAll()
+        protected async Task<List<T>> QueryAll(int? maxResultCount = null)
         {
-            var queryStr = BuildSelectAllQuery();
+            var queryStr = BuildSelectAllQuery(maxResultCount);
             var query = BuildDocumentQuery(queryStr);
             var results = new List<T>();
             while (query.HasMoreResults)

@@ -52,9 +52,9 @@ namespace UniversityDemo.Controllers
 
         //[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpGet]
-        public async Task<IActionResult> GetAllAsync()
+        public async Task<IActionResult> GetAllAsync(int? maxResultCount=null)
         {
-            return Ok(await blogService.GetAllAsync());
+            return Ok(await blogService.GetAllAsync(maxResultCount));
         }
 
         [HttpGet("indexing")]

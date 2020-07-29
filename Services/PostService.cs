@@ -44,9 +44,9 @@ namespace UniversityDemo.Services
             return await postRepository.DeleteAsync(user, id);
         }
 
-        public async Task<List<Post>> GetAllAsync()
+        public async Task<List<Post>> GetAllAsync(int? maxResultCount=null)
         {
-            return await postRepository.FindAllAsync();
+            return await postRepository.GetAllAsync(maxResultCount);
         }
 
         public async Task<List<PostIndexingModel>> GetIndexingAsync(string blogId = null)

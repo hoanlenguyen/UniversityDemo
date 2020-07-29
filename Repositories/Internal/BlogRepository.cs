@@ -32,9 +32,9 @@ namespace UniversityDemo.Repositories.Internal
             return true;
         }
 
-        public async Task<List<Blog>> FindAllAsync()
+        public async Task<List<Blog>> GetAllAsync(int? maxResultCount = null)
         {
-            return await QueryAll();
+            return await QueryAll(maxResultCount);
         }
 
         public async Task<Blog> FindOneByIdAsync(string id)

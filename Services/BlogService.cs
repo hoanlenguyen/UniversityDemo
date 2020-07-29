@@ -44,9 +44,9 @@ namespace UniversityDemo.Services
             return await blogRepository.DeleteAsync(user, id);
         }
 
-        public async Task<IEnumerable> GetAllAsync()
+        public async Task<IEnumerable> GetAllAsync(int? maxResultCount = null)
         {
-            return await blogRepository.FindAllAsync();
+            return await blogRepository.GetAllAsync(maxResultCount);
         }
 
         //public async Task<List<BlogIndexingModel>> GetIndexingAsync()
@@ -56,7 +56,7 @@ namespace UniversityDemo.Services
 
         public async Task<IEnumerable> GetIndexingAsync()
         {
-            var blogs= (await blogRepository.FindAllAsync())
+            var blogs= (await blogRepository.GetAllAsync())
                                             .Select(x => x.ToIndexingModel())
                                             .ToList();
             foreach (var blog in blogs)
