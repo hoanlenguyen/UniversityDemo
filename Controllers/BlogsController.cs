@@ -58,15 +58,21 @@ namespace UniversityDemo.Controllers
         }
 
         [HttpGet("indexing")]
-        public async Task<IActionResult> GetIndexingAsync()
+        public async Task<IActionResult> GetIndexingAsync(int? maxResultCount = null)
         {
-            return Ok(await blogService.GetIndexingAsync());
+            return Ok(await blogService.GetIndexingAsync(maxResultCount));
         }
 
         [HttpGet("{blogId}/posts/indexing")]
         public async Task<IActionResult> GetPostIndexingAsync(string blogId)
         {
             return Ok(await HttpContext.RequestServices.GetRequiredService<PostService>().GetIndexingAsync(blogId));
+        }
+
+        [HttpGet("paging")]
+        public async Task<IActionResult> PageIndexingItemsAsync(int skipPages = 0, int take = 10)
+        {
+            return Ok(await blogService.PageIndexingItemsAsync(skipPages, take));
         }
     }
 }

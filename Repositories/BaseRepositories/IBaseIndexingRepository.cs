@@ -11,6 +11,7 @@ namespace UniversityDemo.Repositories.BaseRepositories
     public interface IBaseIndexingRepository
     {
         //Task<List<IndexingT>> FindIndexingAsync(FilterX filter);
-        Task<IEnumerable> FindIndexingAsync(UserInfo user, CancellationToken token = default);
+        //Task<IEnumerable> FindIndexingAsync(UserInfo user, CancellationToken token = default);
+        Task<IEnumerable> PageIndexingItemsAsync(int skipPages = 0, int take = 10);
     }
 }

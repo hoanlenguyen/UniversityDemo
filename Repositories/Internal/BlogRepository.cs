@@ -57,18 +57,23 @@ namespace UniversityDemo.Repositories.Internal
             return await UpdateItemAsync(user, item);
         }
 
-        public async Task<IEnumerable> FindIndexingAsync(CancellationToken token = default)
+        public async Task<IEnumerable> PageIndexingItemsAsync(int skipPages = 0, int take = 10)
         {
-            return await QueryIndexing().FetchAsync(token);
+            return await QueryPaging(skipPages, take);
         }
 
-        FeedIterator<Blog> QueryIndexing()
-        {
-            var queryString = $"SELECT {IndexingDefinition.Build()} FROM c WHERE {DefaultFilterSql()} ";
-                              
-            var query = BuildDocumentQuery(queryString);
-            return query;
-        }
+        //public async Task<IEnumerable> FindIndexingAsync(CancellationToken token = default)
+        //{
+        //    return await QueryIndexing().FetchAsync(token);
+        //}
+
+        //FeedIterator<Blog> QueryIndexing()
+        //{
+        //    var queryString = $"SELECT {IndexingDefinition.Build()} FROM c WHERE {DefaultFilterSql()} ";
+
+        //    var query = BuildDocumentQuery(queryString);
+        //    return query;
+        //}
 
     }
 }

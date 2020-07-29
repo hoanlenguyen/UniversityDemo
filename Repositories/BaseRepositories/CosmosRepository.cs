@@ -39,9 +39,32 @@ namespace UniversityDemo.Repositories.BaseRepositories
             return maxResultCount == null ? $"SELECT * FROM c WHERE " :
                                             $"SELECT TOP {maxResultCount.ToString()} * FROM c WHERE ";
         }
+
         protected virtual string DefaultFilterSql()
         {
             return $" ( c.meta.isDeleted=false OR (NOT IS_DEFINED(c.meta.isDeleted))) ";
+        }
+
+        protected virtual string AddPagination(int? skipPages = null, int take = 10)
+        {
+            string sql = "";
+
+            if (skipPages != null)
+            {
+                var skipItems = skipPages.GetValueOrDefault() * take;
+                sql = $" OFFSET {skipItems.ToString()} LIMIT {take}";
+            }
+            else
+            {
+                sql = $" OFFSET 0 LIMIT {take}";
+            }
+
+            return sql;
+        }
+
+        protected virtual string BuildPagingQuery(int? skipPages = null, int take = 10)
+        {
+            return $"{DefaultSql()}{DefaultFilterSql()}{AddPagination(skipPages, take)}";
         }
 
         protected virtual string BuildFindOneByIdQuery(string id)
@@ -68,6 +91,21 @@ namespace UniversityDemo.Repositories.BaseRepositories
         protected async Task<List<T>> QueryAll(int? maxResultCount = null)
         {
             var queryStr = BuildSelectAllQuery(maxResultCount);
+            var query = BuildDocumentQuery(queryStr);
+            var results = new List<T>();
+            while (query.HasMoreResults)
+            {
+                var response = await query.ReadNextAsync();
+
+                results.AddRange(response.ToList());
+            }
+
+            return results;
+        }
+
+        protected async Task<List<T>> QueryPaging(int skipPages = 0, int take = 10)
+        {
+            var queryStr = BuildPagingQuery(skipPages, take);
             var query = BuildDocumentQuery(queryStr);
             var results = new List<T>();
             while (query.HasMoreResults)

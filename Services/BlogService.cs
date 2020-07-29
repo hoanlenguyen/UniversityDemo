@@ -54,9 +54,9 @@ namespace UniversityDemo.Services
         //    return (await blogRepository.FindIndexingAsync()).Select(x=>x.ToIndexingModel()).ToList();
         //}
 
-        public async Task<IEnumerable> GetIndexingAsync()
+        public async Task<IEnumerable> GetIndexingAsync(int? maxResultCount = null)
         {
-            var blogs= (await blogRepository.GetAllAsync())
+            var blogs= (await blogRepository.GetAllAsync(maxResultCount))
                                             .Select(x => x.ToIndexingModel())
                                             .ToList();
             foreach (var blog in blogs)
@@ -64,6 +64,11 @@ namespace UniversityDemo.Services
                 blog.Posts = (await postService.GetIndexingAsync(blog.Id));
             }
             return blogs;
+        }
+
+        public async Task<IEnumerable> PageIndexingItemsAsync(int skipPages = 0, int take = 10)
+        {
+            return await blogRepository.PageIndexingItemsAsync(skipPages, take);
         }
     }
 }
