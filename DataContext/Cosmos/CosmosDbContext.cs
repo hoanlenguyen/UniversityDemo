@@ -2,11 +2,11 @@
 
 namespace UniversityDemo.DataContext.Cosmos
 {
-    public class CosmosDbService
+    public class CosmosDbContext
     {
         public Container Container { get; private set; }
 
-        public CosmosDbService(
+        public CosmosDbContext(
             CosmosClient dbClient,
             string databaseName,
             string containerName)

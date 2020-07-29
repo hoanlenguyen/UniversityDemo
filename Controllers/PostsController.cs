@@ -47,7 +47,7 @@ namespace UniversityDemo.Controllers
             return Ok(await postService.DeleteAsync(GetUserInfo(User), id));
         }
 
-        [HttpGet("all")]
+        [HttpGet]
         public async Task<IActionResult> GetAllAsync()
         {
             return Ok(await postService.GetAllAsync());

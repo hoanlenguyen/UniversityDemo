@@ -8,7 +8,7 @@ using UniversityDemo.Services;
 
 namespace UniversityDemo.Controllers
 {
-    [Authorize]
+    //[Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class BlogsController : BaseApiController
@@ -51,7 +51,7 @@ namespace UniversityDemo.Controllers
         }
 
         //[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        [HttpGet("all")]
+        [HttpGet]
         public async Task<IActionResult> GetAllAsync()
         {
             return Ok(await blogService.GetAllAsync());

@@ -10,7 +10,7 @@ using UniversityDemo.Repositories.BaseRepositories;
 
 namespace UniversityDemo.Repositories.Internal
 {
-    public class BlogRepository : CosmosRepository<Blog>, IBlogRepository
+    public class BlogRepository : CosmosPartitionRepository<Blog>, IBlogRepository
     {
         //private static QueryDefinition<Blog> PublicDefinition =>
         //QueryDefinition<Blog>.Select
@@ -22,12 +22,9 @@ namespace UniversityDemo.Repositories.Internal
             .Field(b => b.Id)
             .Field(b => b.Url);
 
-        public BlogRepository(CosmosDbService cosmosDb) : base(cosmosDb.Container)
+        public BlogRepository(CosmosDbContext cosmosDb) : base(cosmosDb.Container, nameof(Blog))
         {
-            this.cosmosDb = cosmosDb;
         }
-
-        private CosmosDbService cosmosDb { get; }
 
         public async Task<bool> DeleteAsync(UserInfo user, params string[] ids)
         {
@@ -73,13 +70,5 @@ namespace UniversityDemo.Repositories.Internal
             return query;
         }
 
-        #region Cosmos
-
-        protected override string CreatePartitionKey()
-        {
-            return nameof(Blog);
-        }
-
-        #endregion Cosmos
     }
 }

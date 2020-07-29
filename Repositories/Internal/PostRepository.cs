@@ -11,13 +11,10 @@ using UniversityDemo.Repositories.BaseRepositories;
 
 namespace UniversityDemo.Repositories.Internal
 {
-    public class PostRepository : CosmosRepository<Post>, IPostRepository
+    public class PostRepository : CosmosPartitionRepository<Post>, IPostRepository
     {
-        private CosmosDbService cosmosDb { get; }
-
-        public PostRepository(CosmosDbService cosmosDb) : base(cosmosDb.Container)
+        public PostRepository(CosmosDbContext cosmosDb) : base(cosmosDb.Container, nameof(Post))
         {
-            this.cosmosDb = cosmosDb;
         }
 
         private static QueryDefinition<Post> IndexingDefinition =>
@@ -74,13 +71,5 @@ namespace UniversityDemo.Repositories.Internal
             return query;
         }
 
-        #region Cosmos
-
-        protected override string CreatePartitionKey()
-        {
-            return nameof(Post);
-        }
-
-        #endregion Cosmos
     }
 }
