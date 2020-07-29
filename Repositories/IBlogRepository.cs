@@ -7,7 +7,7 @@ using UniversityDemo.Repositories.BaseRepositories;
 
 namespace UniversityDemo.Repositories
 {
-    public interface IBlogRepository : IManageRepository<Blog>, IBaseIndexingRepository
+    public interface IBlogRepository : IManageRepository<Blog>, IBasePagingRepository
     {
         //Task<IEnumerable> FindIndexingAsync(CancellationToken token = default);
     }

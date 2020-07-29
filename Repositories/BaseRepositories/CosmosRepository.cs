@@ -45,24 +45,12 @@ namespace UniversityDemo.Repositories.BaseRepositories
             return $" ( c.meta.isDeleted=false OR (NOT IS_DEFINED(c.meta.isDeleted))) ";
         }
 
-        protected virtual string AddPagination(int? skipPages = null, int take = 10)
+        protected virtual string AddPagination(int skipPages = 0, int take = 10)
         {
-            string sql = "";
-
-            if (skipPages != null)
-            {
-                var skipItems = skipPages.GetValueOrDefault() * take;
-                sql = $" OFFSET {skipItems.ToString()} LIMIT {take}";
-            }
-            else
-            {
-                sql = $" OFFSET 0 LIMIT {take}";
-            }
-
-            return sql;
+            return $" OFFSET {(skipPages * take).ToString()} LIMIT {take}";
         }
 
-        protected virtual string BuildPagingQuery(int? skipPages = null, int take = 10)
+        protected virtual string BuildPagingQuery(int skipPages = 0, int take = 10)
         {
             return $"{DefaultSql()}{DefaultFilterSql()}{AddPagination(skipPages, take)}";
         }

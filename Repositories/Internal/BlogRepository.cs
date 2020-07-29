@@ -1,6 +1,7 @@
 ﻿using Microsoft.Azure.Cosmos;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using UniversityDemo.DataContext.Cosmos;
@@ -59,7 +60,8 @@ namespace UniversityDemo.Repositories.Internal
 
         public async Task<IEnumerable> PageIndexingItemsAsync(int skipPages = 0, int take = 10)
         {
-            return await QueryPaging(skipPages, take);
+            var blogs = QueryPaging(skipPages, take).GetAwaiter().GetResult();
+            return blogs.Select(x => x.ToIndexingModel());
         }
 
         //public async Task<IEnumerable> FindIndexingAsync(CancellationToken token = default)

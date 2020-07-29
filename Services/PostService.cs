@@ -54,5 +54,10 @@ namespace UniversityDemo.Services
             return (await postRepository.FindIndexingAsync(blogId))
                                         .Select(x => x.ToIndexingModel()).ToList();
         }
+
+        public async Task<IEnumerable> PageIndexingItemsAsync(int skipPages = 0, int take = 10)
+        {
+            return await postRepository.PageIndexingItemsAsync(skipPages, take);
+        }
     }
 }

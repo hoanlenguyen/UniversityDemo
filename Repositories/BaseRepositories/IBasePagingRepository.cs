@@ -8,7 +8,7 @@ using UniversityDemo.Identity;
 
 namespace UniversityDemo.Repositories.BaseRepositories
 {
-    public interface IBaseIndexingRepository
+    public interface IBasePagingRepository
     {
         //Task<List<IndexingT>> FindIndexingAsync(FilterX filter);
         //Task<IEnumerable> FindIndexingAsync(UserInfo user, CancellationToken token = default);

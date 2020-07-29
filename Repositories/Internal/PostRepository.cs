@@ -2,6 +2,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using UniversityDemo.DataContext.Cosmos;
@@ -69,6 +70,12 @@ namespace UniversityDemo.Repositories.Internal
 
             var query = BuildDocumentQuery(queryString);
             return query;
+        }
+
+        public async Task<IEnumerable> PageIndexingItemsAsync(int skipPages = 0, int take = 10)
+        {
+            var posts= QueryPaging(skipPages, take).GetAwaiter().GetResult();            
+            return posts.Select(x=>x.ToIndexingModel());
         }
 
     }

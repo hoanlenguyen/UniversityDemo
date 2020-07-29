@@ -52,5 +52,11 @@ namespace UniversityDemo.Controllers
         {
             return Ok(await postService.GetAllAsync(maxResultCount));
         }
+
+        [HttpGet("paging")]
+        public async Task<IActionResult> PageIndexingItemsAsync(int skipPages = 0, int take = 10)
+        {
+            return Ok(await postService.PageIndexingItemsAsync(skipPages, take));
+        }
     }
 }
