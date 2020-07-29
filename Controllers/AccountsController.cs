@@ -76,12 +76,6 @@ namespace UniversityDemo.Controllers
             return Ok(await _accountsService.GetUserRolesByUserId(userId));
         }
 
-        [HttpPost("{userName}/Change/{password}")]
-        public async Task<IActionResult> ChangeUserPassword(string userName, string password)
-        {
-            return Ok(await _accountsService.ChangeUserPassword(userName, password));
-        }
-
         private JsonResult Error(string message)
         {
             return new JsonResult(message) { StatusCode = 400 };
