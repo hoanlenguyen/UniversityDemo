@@ -15,7 +15,7 @@ namespace UniversityDemo.Repositories.BaseRepositories
         {
             DefaultContainer = defaultContainer;
         }
-
+        //Install-Package Microsoft.Extensions.Caching.Cosmos -Version 1.0.0-preview
         protected QueryRequestOptions _requestOptions { get; set; } = new QueryRequestOptions();
 
         protected Container DefaultContainer { get; }
