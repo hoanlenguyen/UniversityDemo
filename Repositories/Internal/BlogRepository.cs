@@ -1,12 +1,11 @@
-﻿using Microsoft.Azure.Cosmos;
-using System.Collections;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using UniversityDemo.DataContext.Cosmos;
 using UniversityDemo.Identity;
 using UniversityDemo.Models;
+using UniversityDemo.Models.Paging;
 using UniversityDemo.Repositories.BaseRepositories;
 
 namespace UniversityDemo.Repositories.Internal
@@ -58,10 +57,29 @@ namespace UniversityDemo.Repositories.Internal
             return await UpdateItemAsync(user, item);
         }
 
-        public async Task<IEnumerable> PageIndexingItemsAsync(int skipPages = 0, int take = 10)
+        public async Task<PagingResult> PageIndexingItemsAsync(PagingRequest request)
         {
-            var blogs = QueryPaging(skipPages, take).GetAwaiter().GetResult();
-            return blogs.Select(x => x.ToIndexingModel());
+            var count = await QueryItemCount();
+            var maxPage = Math.Ceiling((double)count / request.ItemsPerPage);
+            var result = new PagingResult()
+            {
+                CurrentPage = request.CurrentPage,
+                ItemsPerPage = request.ItemsPerPage,
+                MaxItemCount = count
+            };
+
+            if (request.CurrentPage <= maxPage)
+            {
+                var skipPages = request.CurrentPage > 1 ? request.CurrentPage - 1 : 0;
+                result.Items = QueryPaging(skipPages, request.ItemsPerPage).GetAwaiter().GetResult().Select(x => x.ToIndexingModel());
+            }
+
+            return result;
+        }
+
+        public async Task<int> GetItemCount()
+        {
+            return await QueryItemCount();
         }
 
         //public async Task<IEnumerable> FindIndexingAsync(CancellationToken token = default)
@@ -76,6 +94,5 @@ namespace UniversityDemo.Repositories.Internal
         //    var query = BuildDocumentQuery(queryString);
         //    return query;
         //}
-
     }
 }

@@ -44,15 +44,20 @@ namespace UniversityDemo.Repositories.BaseRepositories
         {
             return $" ( c.meta.isDeleted=false OR (NOT IS_DEFINED(c.meta.isDeleted))) ";
         }
-
-        protected virtual string AddPagination(int skipPages = 0, int take = 10)
+        
+        protected virtual string AddPaginationSql(int skipPages = 0, int take = 10)
         {
             return $" OFFSET {(skipPages * take).ToString()} LIMIT {take}";
         }
 
+        protected virtual string BuildItemCountQuery()
+        {
+            return $"SELECT VALUE COUNT(1) FROM c WHERE {DefaultFilterSql()}";
+        }
+
         protected virtual string BuildPagingQuery(int skipPages = 0, int take = 10)
         {
-            return $"{DefaultSql()}{DefaultFilterSql()}{AddPagination(skipPages, take)}";
+            return $"{DefaultSql()}{DefaultFilterSql()}{AddPaginationSql(skipPages, take)}";
         }
 
         protected virtual string BuildFindOneByIdQuery(string id)
@@ -89,6 +94,14 @@ namespace UniversityDemo.Repositories.BaseRepositories
             }
 
             return results;
+        }
+
+        protected async Task<int> QueryItemCount()
+        {
+            var queryStr = BuildItemCountQuery();
+            var query= this.DefaultContainer.GetItemQueryIterator<int>(new QueryDefinition(queryStr), null, _requestOptions);
+            var result = await query.ReadNextAsync();
+            return result.FirstOrDefault();
         }
 
         protected async Task<List<T>> QueryPaging(int skipPages = 0, int take = 10)

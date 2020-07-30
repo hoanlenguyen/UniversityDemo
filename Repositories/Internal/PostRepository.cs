@@ -1,6 +1,5 @@
 ﻿using Microsoft.Azure.Cosmos;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -8,6 +7,7 @@ using System.Threading.Tasks;
 using UniversityDemo.DataContext.Cosmos;
 using UniversityDemo.Identity;
 using UniversityDemo.Models;
+using UniversityDemo.Models.Paging;
 using UniversityDemo.Repositories.BaseRepositories;
 
 namespace UniversityDemo.Repositories.Internal
@@ -22,9 +22,9 @@ namespace UniversityDemo.Repositories.Internal
         QueryDefinition<Post>.Select
             .Field(q => q.Id)
             .Field(q => q.Title)
-            .Field(q=>q.CoverImagePath)
-            .Field(q=>q.Meta)
-            .Field(q=>q.BlogId)
+            .Field(q => q.CoverImagePath)
+            .Field(q => q.Meta)
+            .Field(q => q.BlogId)
             .Field(q => q.Views);
 
         public async Task<bool> DeleteAsync(UserInfo user, params string[] ids)
@@ -63,20 +63,33 @@ namespace UniversityDemo.Repositories.Internal
             return await QueryIndexing(blogId).FetchAsync(token);
         }
 
-        FeedIterator<Post> QueryIndexing(string blogId=null)
+        private FeedIterator<Post> QueryIndexing(string blogId = null)
         {
             var queryString = $"SELECT {IndexingDefinition.Build()} FROM c WHERE {DefaultFilterSql()} " +
-                             (string.IsNullOrEmpty(blogId)? "": $"AND c.blogId='{blogId}'");
+                             (string.IsNullOrEmpty(blogId) ? "" : $"AND c.blogId='{blogId}'");
 
             var query = BuildDocumentQuery(queryString);
             return query;
         }
 
-        public async Task<IEnumerable> PageIndexingItemsAsync(int skipPages = 0, int take = 10)
+        public async Task<PagingResult> PageIndexingItemsAsync(PagingRequest request)
         {
-            var posts= QueryPaging(skipPages, take).GetAwaiter().GetResult();            
-            return posts.Select(x=>x.ToIndexingModel());
-        }
+            var count = await QueryItemCount();
+            var maxPage = Math.Ceiling((double)count / request.ItemsPerPage);
+            var result = new PagingResult()
+            {
+                CurrentPage = request.CurrentPage,
+                ItemsPerPage = request.ItemsPerPage,
+                MaxItemCount = count
+            };
 
+            if (request.CurrentPage <= maxPage)
+            {
+                var skipPages = request.CurrentPage > 1 ? request.CurrentPage - 1 : 0;
+                result.Items = QueryPaging(skipPages, request.ItemsPerPage).GetAwaiter().GetResult().Select(x => x.ToIndexingModel());
+            }
+
+            return result;
+        }
     }
 }

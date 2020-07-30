@@ -1,8 +1,4 @@
 ﻿using Microsoft.Azure.Cosmos;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using UniversityDemo.BaseEntities;
 
 namespace UniversityDemo.Repositories.BaseRepositories
@@ -19,7 +15,7 @@ namespace UniversityDemo.Repositories.BaseRepositories
             {
                 PartitionId = partitionId;
 
-                _requestOptions = new QueryRequestOptions { PartitionKey = new PartitionKey(PartitionId), MaxItemCount = 100,  };
+                _requestOptions = new QueryRequestOptions { PartitionKey = new PartitionKey(PartitionId), MaxItemCount = 100, };
             }
         }
 
@@ -34,6 +30,5 @@ namespace UniversityDemo.Repositories.BaseRepositories
         {
             return PartitionId ?? typeof(T).Name;
         }
-
     }
 }

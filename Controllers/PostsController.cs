@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using UniversityDemo.Controllers.BaseControllers;
 using UniversityDemo.Models;
+using UniversityDemo.Models.Paging;
 using UniversityDemo.Services;
 
 namespace UniversityDemo.Controllers
@@ -48,15 +49,15 @@ namespace UniversityDemo.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllAsync(int? maxResultCount=null)
+        public async Task<IActionResult> GetAllAsync(int? maxResultCount = null)
         {
             return Ok(await postService.GetAllAsync(maxResultCount));
         }
 
-        [HttpGet("paging")]
-        public async Task<IActionResult> PageIndexingItemsAsync(int skipPages = 0, int take = 10)
+        [HttpPost("paging")]
+        public async Task<IActionResult> PageIndexingItemsAsync([FromForm]PagingRequest request)
         {
-            return Ok(await postService.PageIndexingItemsAsync(skipPages, take));
+            return Ok(await postService.PageIndexingItemsAsync(request));
         }
     }
 }

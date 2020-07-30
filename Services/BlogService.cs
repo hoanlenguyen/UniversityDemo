@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using UniversityDemo.Identity;
 using UniversityDemo.Models;
+using UniversityDemo.Models.Paging;
 using UniversityDemo.Repositories;
 
 namespace UniversityDemo.Services
@@ -66,9 +67,14 @@ namespace UniversityDemo.Services
             return blogs;
         }
 
-        public async Task<IEnumerable> PageIndexingItemsAsync(int skipPages = 0, int take = 10)
+        public async Task<PagingResult> PageIndexingItemsAsync(PagingRequest request)
         {
-            return await blogRepository.PageIndexingItemsAsync(skipPages, take);
+            return await blogRepository.PageIndexingItemsAsync(request);
+        }
+
+        public async Task<int> GetItemCount()
+        {
+            return await blogRepository.GetItemCount();
         }
     }
 }
