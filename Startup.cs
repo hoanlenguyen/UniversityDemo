@@ -56,6 +56,18 @@ namespace UniversityDemo
                 .AddDefaultTokenProviders()
                 .AddEntityFrameworkStores<DemoDbContext>();
 
+            //services.AddCors(opts =>
+            //{
+            //    //opts.AddPolicy("AllowAllOrigins",
+            //    //builder =>
+            //    //{
+            //    //    builder.AllowAnyOrigin()
+            //    //    .AllowAnyMethod()
+            //    //    .AllowCredentials();
+
+            //    //});
+            //});
+
             services.AddHttpContextAccessor();
 
             services.Configure<JWTSettings>(Configuration.GetSection(nameof(JWTSettings)));

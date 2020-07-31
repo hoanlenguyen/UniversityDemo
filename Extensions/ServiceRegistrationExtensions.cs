@@ -25,6 +25,7 @@ namespace UniversityDemo.Extensions
 
             services.AddScoped<RoleService>();
 
+            services.AddScoped<FileService>();
             return services;
         }
 
