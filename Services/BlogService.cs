@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using UniversityDemo.Identity;
 using UniversityDemo.Models;
+using UniversityDemo.Models.Paging;
 using UniversityDemo.Repositories;
 
 namespace UniversityDemo.Services
@@ -44,9 +45,9 @@ namespace UniversityDemo.Services
             return await blogRepository.DeleteAsync(user, id);
         }
 
-        public async Task<IEnumerable> GetAllAsync()
+        public async Task<IEnumerable> GetAllAsync(int? maxResultCount = null)
         {
-            return await blogRepository.FindAllAsync();
+            return await blogRepository.GetAllAsync(maxResultCount);
         }
 
         //public async Task<List<BlogIndexingModel>> GetIndexingAsync()
@@ -54,9 +55,9 @@ namespace UniversityDemo.Services
         //    return (await blogRepository.FindIndexingAsync()).Select(x=>x.ToIndexingModel()).ToList();
         //}
 
-        public async Task<IEnumerable> GetIndexingAsync()
+        public async Task<IEnumerable> GetIndexingAsync(int? maxResultCount = null)
         {
-            var blogs= (await blogRepository.FindAllAsync())
+            var blogs= (await blogRepository.GetAllAsync(maxResultCount))
                                             .Select(x => x.ToIndexingModel())
                                             .ToList();
             foreach (var blog in blogs)
@@ -64,6 +65,16 @@ namespace UniversityDemo.Services
                 blog.Posts = (await postService.GetIndexingAsync(blog.Id));
             }
             return blogs;
+        }
+
+        public async Task<PagingResult> PageIndexingItemsAsync(PagingRequest request)
+        {
+            return await blogRepository.PageIndexingItemsAsync(request);
+        }
+
+        public async Task<int> GetItemCount()
+        {
+            return await blogRepository.GetItemCount();
         }
     }
 }

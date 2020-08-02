@@ -1,16 +1,16 @@
-﻿using Microsoft.Azure.Cosmos;
-using System.Collections;
+﻿using System;
 using System.Collections.Generic;
-using System.Threading;
+using System.Linq;
 using System.Threading.Tasks;
 using UniversityDemo.DataContext.Cosmos;
 using UniversityDemo.Identity;
 using UniversityDemo.Models;
+using UniversityDemo.Models.Paging;
 using UniversityDemo.Repositories.BaseRepositories;
 
 namespace UniversityDemo.Repositories.Internal
 {
-    public class BlogRepository : CosmosRepository<Blog>, IBlogRepository
+    public class BlogRepository : CosmosPartitionRepository<Blog>, IBlogRepository
     {
         //private static QueryDefinition<Blog> PublicDefinition =>
         //QueryDefinition<Blog>.Select
@@ -22,12 +22,9 @@ namespace UniversityDemo.Repositories.Internal
             .Field(b => b.Id)
             .Field(b => b.Url);
 
-        public BlogRepository(CosmosDbService cosmosDb) : base(cosmosDb.Container)
+        public BlogRepository(CosmosDbContext cosmosDb) : base(cosmosDb.Container, nameof(Blog))
         {
-            this.cosmosDb = cosmosDb;
         }
-
-        private CosmosDbService cosmosDb { get; }
 
         public async Task<bool> DeleteAsync(UserInfo user, params string[] ids)
         {
@@ -35,9 +32,9 @@ namespace UniversityDemo.Repositories.Internal
             return true;
         }
 
-        public async Task<List<Blog>> FindAllAsync()
+        public async Task<List<Blog>> GetAllAsync(int? maxResultCount = null)
         {
-            return await QueryAll();
+            return await QueryAll(maxResultCount);
         }
 
         public async Task<Blog> FindOneByIdAsync(string id)
@@ -60,26 +57,42 @@ namespace UniversityDemo.Repositories.Internal
             return await UpdateItemAsync(user, item);
         }
 
-        public async Task<IEnumerable> FindIndexingAsync(CancellationToken token = default)
+        public async Task<PagingResult> PageIndexingItemsAsync(PagingRequest request)
         {
-            return await QueryIndexing().FetchAsync(token);
+            var count = await QueryItemCount();
+            var maxPage = Math.Ceiling((double)count / request.ItemsPerPage);
+            var result = new PagingResult()
+            {
+                CurrentPage = request.CurrentPage,
+                ItemsPerPage = request.ItemsPerPage,
+                MaxItemCount = count
+            };
+
+            if (request.CurrentPage <= maxPage)
+            {
+                var skipPages = request.CurrentPage > 1 ? request.CurrentPage - 1 : 0;
+                result.Items = QueryPaging(skipPages, request.ItemsPerPage).GetAwaiter().GetResult().Select(x => x.ToIndexingModel());
+            }
+
+            return result;
         }
 
-        FeedIterator<Blog> QueryIndexing()
+        public async Task<int> GetItemCount()
         {
-            var queryString = $"SELECT {IndexingDefinition.Build()} FROM c WHERE {DefaultFilterSql()} ";
-                              
-            var query = BuildDocumentQuery(queryString);
-            return query;
+            return await QueryItemCount();
         }
 
-        #region Cosmos
+        //public async Task<IEnumerable> FindIndexingAsync(CancellationToken token = default)
+        //{
+        //    return await QueryIndexing().FetchAsync(token);
+        //}
 
-        protected override string CreatePartitionKey()
-        {
-            return nameof(Blog);
-        }
+        //FeedIterator<Blog> QueryIndexing()
+        //{
+        //    var queryString = $"SELECT {IndexingDefinition.Build()} FROM c WHERE {DefaultFilterSql()} ";
 
-        #endregion Cosmos
+        //    var query = BuildDocumentQuery(queryString);
+        //    return query;
+        //}
     }
 }

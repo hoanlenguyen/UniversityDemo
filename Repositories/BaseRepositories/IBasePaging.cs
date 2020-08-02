@@ -8,9 +8,10 @@ using UniversityDemo.Identity;
 
 namespace UniversityDemo.Repositories.BaseRepositories
 {
-    public interface IBaseIndexingRepository
+    public interface IBasePaging<T,U> where T : class where U : class
     {
         //Task<List<IndexingT>> FindIndexingAsync(FilterX filter);
-        Task<IEnumerable> FindIndexingAsync(UserInfo user, CancellationToken token = default);
+        //Task<IEnumerable> FindIndexingAsync(UserInfo user, CancellationToken token = default);
+        Task<U> PageIndexingItemsAsync(T request);
     }
 }

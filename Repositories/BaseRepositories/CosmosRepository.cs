@@ -11,24 +11,53 @@ namespace UniversityDemo.Repositories.BaseRepositories
 {
     public class CosmosRepository<T> where T : BaseEntity
     {
-        protected Container DefaultContainer { get; }
-
         protected CosmosRepository(Container defaultContainer)
         {
             DefaultContainer = defaultContainer;
         }
-        protected virtual string CreatePartitionKey()
+        //Install-Package Microsoft.Extensions.Caching.Cosmos -Version 1.0.0-preview
+        protected QueryRequestOptions _requestOptions { get; set; } = new QueryRequestOptions();
+
+        protected Container DefaultContainer { get; }
+
+        protected virtual string GetPartitionKey()
         {
-            return nameof(T);
+            return typeof(T).Name;
         }
-        protected virtual string DefaultSql()
+        protected virtual QueryRequestOptions GetRequestOptions(T item = default)
         {
-            return $"SELECT * FROM c WHERE ";
+            return GetRequestOptions<T>(item);
         }
+
+        protected virtual QueryRequestOptions GetRequestOptions<TEntity>(TEntity item = default) where TEntity : BaseEntity
+        {
+            return _requestOptions;
+        }
+
+        protected virtual string DefaultSql(int? maxResultCount = null)
+        {
+            return maxResultCount == null ? $"SELECT * FROM c WHERE " :
+                                            $"SELECT TOP {maxResultCount.ToString()} * FROM c WHERE ";
+        }
+
         protected virtual string DefaultFilterSql()
         {
-            return $" c.type='{CreatePartitionKey()}' " +
-                    $"AND ( c.meta.isDeleted=false OR (NOT IS_DEFINED(c.meta.isDeleted))) ";
+            return $" ( c.meta.isDeleted=false OR (NOT IS_DEFINED(c.meta.isDeleted))) ";
+        }
+        
+        protected virtual string AddPaginationSql(int skipPages = 0, int take = 10)
+        {
+            return $" OFFSET {(skipPages * take).ToString()} LIMIT {take}";
+        }
+
+        protected virtual string BuildItemCountQuery()
+        {
+            return $"SELECT VALUE COUNT(1) FROM c WHERE {DefaultFilterSql()}";
+        }
+
+        protected virtual string BuildPagingQuery(int skipPages = 0, int take = 10)
+        {
+            return $"{DefaultSql()}{DefaultFilterSql()}{AddPaginationSql(skipPages, take)}";
         }
 
         protected virtual string BuildFindOneByIdQuery(string id)
@@ -42,19 +71,43 @@ namespace UniversityDemo.Repositories.BaseRepositories
             return $"{DefaultSql()}{DefaultFilterSql()} AND c.id IN {arrStr}";
         }
 
-        protected virtual string BuildSelectAllQuery(string queryString = null)
+        protected virtual string BuildSelectAllQuery(int? maxResultCount = null)
         {
-            return $"{DefaultSql()}{DefaultFilterSql()} " + queryString;
+            return $"{DefaultSql(maxResultCount)}{DefaultFilterSql()} ";
         }
 
         protected FeedIterator<T> BuildDocumentQuery(string queryString)
         {
-            return this.DefaultContainer.GetItemQueryIterator<T>(new QueryDefinition(queryString));
+            return this.DefaultContainer.GetItemQueryIterator<T>(new QueryDefinition(queryString), null, _requestOptions);
         }
 
-        protected async Task<List<T>> QueryAll()
+        protected async Task<List<T>> QueryAll(int? maxResultCount = null)
         {
-            var query = BuildDocumentQuery(BuildSelectAllQuery());
+            var queryStr = BuildSelectAllQuery(maxResultCount);
+            var query = BuildDocumentQuery(queryStr);
+            var results = new List<T>();
+            while (query.HasMoreResults)
+            {
+                var response = await query.ReadNextAsync();
+
+                results.AddRange(response.ToList());
+            }
+
+            return results;
+        }
+
+        protected async Task<int> QueryItemCount()
+        {
+            var queryStr = BuildItemCountQuery();
+            var query= this.DefaultContainer.GetItemQueryIterator<int>(new QueryDefinition(queryStr), null, _requestOptions);
+            var result = await query.ReadNextAsync();
+            return result.FirstOrDefault();
+        }
+
+        protected async Task<List<T>> QueryPaging(int skipPages = 0, int take = 10)
+        {
+            var queryStr = BuildPagingQuery(skipPages, take);
+            var query = BuildDocumentQuery(queryStr);
             var results = new List<T>();
             while (query.HasMoreResults)
             {
@@ -68,7 +121,8 @@ namespace UniversityDemo.Repositories.BaseRepositories
 
         protected async Task<List<T>> QueryFindItemsByIds(params string[] ids)
         {
-            var query = BuildDocumentQuery(BuildFindItemByIdsQuery(ids));
+            var queryStr = BuildFindItemByIdsQuery(ids);
+            var query = BuildDocumentQuery(queryStr);
             var results = new List<T>();
             while (query.HasMoreResults)
             {
@@ -91,23 +145,21 @@ namespace UniversityDemo.Repositories.BaseRepositories
         {
             item.Meta.UpdatedAt = DateTime.UtcNow;
             item.Meta.UpdatedBy = user.Id;
-            item.Type = CreatePartitionKey();
-            DefaultContainer.UpsertItemAsync<T>(item, new PartitionKey(CreatePartitionKey())).GetAwaiter().GetResult();
+            DefaultContainer.UpsertItemAsync<T>(item, _requestOptions.PartitionKey).GetAwaiter().GetResult();
             return await QueryFindOneById(item.Id);
         }
 
         public async Task<T> InsertItemAsync(UserInfo user, T item)
         {
             item.Id = Guid.NewGuid().ToString();
-            //item.Meta ??= new Meta();
             item.Meta.CreatedAt = DateTime.UtcNow;
             item.Meta.CreatedBy = user.Id;
-            item.Type = CreatePartitionKey();
-            var entity = await this.DefaultContainer.CreateItemAsync<T>(item, new PartitionKey(CreatePartitionKey()));
+            item.Type = GetPartitionKey();
+            var entity = await this.DefaultContainer.CreateItemAsync<T>(item, _requestOptions.PartitionKey);
             return await QueryFindOneById(entity.Resource.Id);
         }
 
-        public async Task DeleteItemByIdAsync(UserInfo user, string id)
+        public async Task DeleteItemAsync(UserInfo user, string id)
         {
             var item = await QueryFindOneById(id);
             if (item == null)
@@ -115,28 +167,21 @@ namespace UniversityDemo.Repositories.BaseRepositories
             item.Meta.UpdatedAt = DateTime.UtcNow;
             item.Meta.UpdatedBy = user.Id;
             item.Meta.IsDeleted = true;
-            await DefaultContainer.UpsertItemAsync<T>(item, new PartitionKey(CreatePartitionKey()));
-        }
-
-        public async Task DeleteItemAsync(UserInfo user, T item)
-        {
-            item.Meta.UpdatedAt = DateTime.UtcNow;
-            item.Meta.UpdatedBy = user.Id;
-            item.Meta.IsDeleted = true;
-            await DefaultContainer.UpsertItemAsync<T>(item, new PartitionKey(CreatePartitionKey()));
+            await DefaultContainer.UpsertItemAsync<T>(item, _requestOptions.PartitionKey);
         }
 
         public async Task DeleteItemAsync(UserInfo user, params string[] ids)
         {
             foreach (var id in ids)
             {
-                await DeleteItemByIdAsync(user, id);
+                await DeleteItemAsync(user, id);
             }
         }
 
-        public async Task RemoveItemAsync(T item)
+        public async Task RemoveItemAsync(string id)
         {
-            await DefaultContainer.DeleteItemAsync<T>(item.Id, new PartitionKey(CreatePartitionKey()));
+            await DefaultContainer.DeleteItemAsync<T>(id, _requestOptions.PartitionKey.GetValueOrDefault());
         }
+
     }
 }

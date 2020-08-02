@@ -1,14 +1,14 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using System.Threading.Tasks;
 using UniversityDemo.Controllers.BaseControllers;
 using UniversityDemo.Models;
+using UniversityDemo.Models.Paging;
 using UniversityDemo.Services;
 
 namespace UniversityDemo.Controllers
 {
-    [Authorize]
+    //[Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class BlogsController : BaseApiController
@@ -51,22 +51,34 @@ namespace UniversityDemo.Controllers
         }
 
         //[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        [HttpGet("all")]
-        public async Task<IActionResult> GetAllAsync()
+        [HttpGet]
+        public async Task<IActionResult> GetAllAsync(int? maxResultCount = null)
         {
-            return Ok(await blogService.GetAllAsync());
+            return Ok(await blogService.GetAllAsync(maxResultCount));
         }
 
         [HttpGet("indexing")]
-        public async Task<IActionResult> GetIndexingAsync()
+        public async Task<IActionResult> GetIndexingAsync(int? maxResultCount = null)
         {
-            return Ok(await blogService.GetIndexingAsync());
+            return Ok(await blogService.GetIndexingAsync(maxResultCount));
         }
 
         [HttpGet("{blogId}/posts/indexing")]
         public async Task<IActionResult> GetPostIndexingAsync(string blogId)
         {
             return Ok(await HttpContext.RequestServices.GetRequiredService<PostService>().GetIndexingAsync(blogId));
+        }
+
+        [HttpPost("paging")]
+        public async Task<IActionResult> PageIndexingItemsAsync([FromForm]PagingRequest request)
+        {
+            return Ok(await blogService.PageIndexingItemsAsync(request));
+        }
+
+        [HttpGet("count")]
+        public async Task<IActionResult> GetItemCount()
+        {
+            return Ok(await blogService.GetItemCount());
         }
     }
 }

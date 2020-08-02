@@ -1,32 +1,30 @@
 ﻿using Microsoft.Azure.Cosmos;
 using System;
-using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using UniversityDemo.DataContext.Cosmos;
 using UniversityDemo.Identity;
 using UniversityDemo.Models;
+using UniversityDemo.Models.Paging;
 using UniversityDemo.Repositories.BaseRepositories;
 
 namespace UniversityDemo.Repositories.Internal
 {
-    public class PostRepository : CosmosRepository<Post>, IPostRepository
+    public class PostRepository : CosmosPartitionRepository<Post>, IPostRepository
     {
-        private CosmosDbService cosmosDb { get; }
-
-        public PostRepository(CosmosDbService cosmosDb) : base(cosmosDb.Container)
+        public PostRepository(CosmosDbContext cosmosDb) : base(cosmosDb.Container, nameof(Post))
         {
-            this.cosmosDb = cosmosDb;
         }
 
         private static QueryDefinition<Post> IndexingDefinition =>
         QueryDefinition<Post>.Select
             .Field(q => q.Id)
             .Field(q => q.Title)
-            .Field(q=>q.CoverImagePath)
-            .Field(q=>q.Meta)
-            .Field(q=>q.BlogId)
+            .Field(q => q.CoverImagePath)
+            .Field(q => q.Meta)
+            .Field(q => q.BlogId)
             .Field(q => q.Views);
 
         public async Task<bool> DeleteAsync(UserInfo user, params string[] ids)
@@ -35,9 +33,9 @@ namespace UniversityDemo.Repositories.Internal
             return true;
         }
 
-        public async Task<List<Post>> FindAllAsync()
+        public async Task<List<Post>> GetAllAsync(int? maxResultCount = null)
         {
-            return await QueryAll();
+            return await QueryAll(maxResultCount);
         }
 
         public async Task<Post> FindOneByIdAsync(string id)
@@ -65,22 +63,33 @@ namespace UniversityDemo.Repositories.Internal
             return await QueryIndexing(blogId).FetchAsync(token);
         }
 
-        FeedIterator<Post> QueryIndexing(string blogId=null)
+        private FeedIterator<Post> QueryIndexing(string blogId = null)
         {
             var queryString = $"SELECT {IndexingDefinition.Build()} FROM c WHERE {DefaultFilterSql()} " +
-                             (string.IsNullOrEmpty(blogId)? "": $"AND c.blogId='{blogId}'");
+                             (string.IsNullOrEmpty(blogId) ? "" : $"AND c.blogId='{blogId}'");
 
             var query = BuildDocumentQuery(queryString);
             return query;
         }
 
-        #region Cosmos
-
-        protected override string CreatePartitionKey()
+        public async Task<PagingResult> PageIndexingItemsAsync(PagingRequest request)
         {
-            return nameof(Post);
-        }
+            var count = await QueryItemCount();
+            var maxPage = Math.Ceiling((double)count / request.ItemsPerPage);
+            var result = new PagingResult()
+            {
+                CurrentPage = request.CurrentPage,
+                ItemsPerPage = request.ItemsPerPage,
+                MaxItemCount = count
+            };
 
-        #endregion Cosmos
+            if (request.CurrentPage <= maxPage)
+            {
+                var skipPages = request.CurrentPage > 1 ? request.CurrentPage - 1 : 0;
+                result.Items = QueryPaging(skipPages, request.ItemsPerPage).GetAwaiter().GetResult().Select(x => x.ToIndexingModel());
+            }
+
+            return result;
+        }
     }
 }

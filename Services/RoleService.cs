@@ -7,14 +7,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Security.Claims;
-using System.Text;
 using System.Threading.Tasks;
 using UniversityDemo.Authorization;
 using UniversityDemo.Data;
 using UniversityDemo.Enum;
 using UniversityDemo.Identity;
 using UniversityDemo.Models.DTO;
-using UniversityDemo.Permissions;
 
 namespace UniversityDemo.Services
 {
@@ -60,57 +58,45 @@ namespace UniversityDemo.Services
 
             foreach (var permission in permissions)
             {
-                var roleClaim = await Context.RoleClaims.FirstOrDefaultAsync(q => q.RoleId == role.Id && q.ClaimValue.ToLower() == permission.ToLower());
-                if (roleClaim != null)
-                    continue;
-
                 await _roleManager.AddClaimAsync(role, new Claim(CustomClaimTypes.Permission, permission));
             }
+
+            //Type type = typeof(Permissions.BlogPermissions);
+            //foreach (var p in type.GetProperties())
+            //{
+            //    var ojValue = p.GetValue(null, null);
+            //    var value = (string)ojValue;
+            //    await _roleManager.AddClaimAsync(role, new Claim(CustomClaimTypes.Permission, value));
+            //}
+
+
+
 
             return true;
         }
 
-        public async Task<bool> UpdatePermissionsForRoleAsync(string roleName, params string[] permissions)
-        {
-            var role = await _roleManager.FindByNameAsync(roleName);
-            if (role == null)
-                return false;
-
-            var roleClaims = Context.RoleClaims.AsNoTracking().Where(x => x.RoleId == role.Id);
-            Context.RoleClaims.RemoveRange(roleClaims);
-            await Context.SaveChangesAsync();
-
-            foreach (var permission in permissions)
-            {
-                //var roleClaim = await Context.RoleClaims.FirstOrDefaultAsync(q => q.RoleId == role.Id && q.ClaimValue.ToLower() == permission.ToLower());
-                //if (roleClaim != null)
-                //    continue;
-                await _roleManager.AddClaimAsync(role, new Claim(CustomClaimTypes.Permission, permission));
-            }
-
-            return true;
-        }
-
-        public async Task<List<IGrouping<string,string>>> GetAllPermissions()
+        public async Task<List<string>> GetBlogPermissions()
         {
             var permissions = new List<string>();
-            var groups = new List<IGrouping<string, string>>();
-            foreach (var type in typeof(RequiredPermissions).GetNestedTypes(BindingFlags.Public | BindingFlags.NonPublic))
-            {
-                if (!type.IsAbstract)
-                    continue;
+            //Type type = typeof(BlogPermissions);
+            //foreach (var p in type.GetProperties())
+            //{
+            //    var ojValue = p.GetValue(null, null);
+            //    //var value = (string)ojValue;
+            //    var value = GetStaticFieldValues(ojValue);
+            //    permissions.Add(value);
+            //}
+            //permissions.Add(type.GetProperties().Length.ToString());
+            return permissions;
+        }
 
-                //var className =type.Name;
-                foreach (var field in type.GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static))
-                {
-                    //var fieldName = field.Name;
-                    permissions.Add(field.GetValue(null).ToString());
-;                }
-            }
-
-            var list = permissions.GroupBy(x => x.Split('.')[1]).ToList();
-            
-            return list;
+        private static Dictionary<string, string> GetFieldValues(object obj)
+        {
+            return obj.GetType()
+                      .GetFields(BindingFlags.Public | BindingFlags.Static)
+                      .Where(f => f.FieldType == typeof(string))
+                      .ToDictionary(f => f.Name,
+                                    f => (string)f.GetValue(null));
         }
 
         private static string GetStaticFieldValues(object obj)

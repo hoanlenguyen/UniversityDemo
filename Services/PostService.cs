@@ -1,16 +1,15 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using UniversityDemo.Identity;
 using UniversityDemo.Models;
 using UniversityDemo.Models.DTO;
+using UniversityDemo.Models.Paging;
 using UniversityDemo.Repositories;
 
 namespace UniversityDemo.Services
 {
-    public class PostService:IPostService
+    public class PostService : IPostService
     {
         private readonly IPostRepository postRepository;
 
@@ -44,15 +43,20 @@ namespace UniversityDemo.Services
             return await postRepository.DeleteAsync(user, id);
         }
 
-        public async Task<List<Post>> GetAllAsync()
+        public async Task<List<Post>> GetAllAsync(int? maxResultCount = null)
         {
-            return await postRepository.FindAllAsync();
+            return await postRepository.GetAllAsync(maxResultCount);
         }
 
         public async Task<List<PostIndexingModel>> GetIndexingAsync(string blogId = null)
         {
             return (await postRepository.FindIndexingAsync(blogId))
                                         .Select(x => x.ToIndexingModel()).ToList();
+        }
+
+        public async Task<PagingResult> PageIndexingItemsAsync(PagingRequest request)
+        {
+            return await postRepository.PageIndexingItemsAsync(request);
         }
     }
 }

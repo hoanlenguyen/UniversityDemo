@@ -38,7 +38,7 @@ namespace UniversityDemo
                 services.AddDbContext<DemoDbContext>(options =>
                 options.UseSqlServer(Configuration["ConnectionStrings:DefaultConnection"]));
 
-                services.AddSingleton<CosmosDbService>(
+                services.AddSingleton<CosmosDbContext>(
                 InitializeCosmosClientInstanceAsync(
                     Configuration.GetSection("CosmosDb")).GetAwaiter().GetResult());
             }
@@ -47,7 +47,7 @@ namespace UniversityDemo
                 services.AddDbContext<DemoDbContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
-                services.AddSingleton<CosmosDbService>(
+                services.AddSingleton<CosmosDbContext>(
                 InitializeCosmosClientInstanceAsync(
                     Configuration.GetSection("CosmosDb")).GetAwaiter().GetResult());
             }
@@ -55,6 +55,18 @@ namespace UniversityDemo
             services.AddIdentity<ApplicationUser, ApplicationRole>()
                 .AddDefaultTokenProviders()
                 .AddEntityFrameworkStores<DemoDbContext>();
+
+            //services.AddCors(opts =>
+            //{
+            //    //opts.AddPolicy("AllowAllOrigins",
+            //    //builder =>
+            //    //{
+            //    //    builder.AllowAnyOrigin()
+            //    //    .AllowAnyMethod()
+            //    //    .AllowCredentials();
+
+            //    //});
+            //});
 
             services.AddHttpContextAccessor();
 
@@ -129,18 +141,18 @@ namespace UniversityDemo
             });
         }
 
-        private static async Task<CosmosDbService> InitializeCosmosClientInstanceAsync(IConfigurationSection configurationSection)
+        private static async Task<CosmosDbContext> InitializeCosmosClientInstanceAsync(IConfigurationSection configurationSection)
         {
             string databaseName = configurationSection.GetSection("DatabaseName").Value;
             string containerName = configurationSection.GetSection("ContainerName").Value;
             string account = configurationSection.GetSection("Account").Value;
             string key = configurationSection.GetSection("Key").Value;
             CosmosClient client = new CosmosClient(account, key);
-            CosmosDbService cosmosDbService = new CosmosDbService(client, databaseName, containerName);
+            CosmosDbContext cosmosDbContext = new CosmosDbContext(client, databaseName, containerName);
             DatabaseResponse database = await client.CreateDatabaseIfNotExistsAsync(databaseName);
             await database.Database.CreateContainerIfNotExistsAsync(containerName, "/type");
 
-            return cosmosDbService;
+            return cosmosDbContext;
         }
     }
 }
