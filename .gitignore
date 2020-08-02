@@ -8,3 +8,6 @@
 /obj
 bin/
 obj/
+/Properties/serviceDependencies.local.json.user
+/Properties/serviceDependencies.local.json
+/Properties/serviceDependencies.json
