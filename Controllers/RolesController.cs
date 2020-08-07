@@ -38,10 +38,5 @@ namespace UniversityDemo.Controllers
             return Ok(await _roleService.AssignPermissionsToRoleAsync(roleName, permissions));
         }
 
-        [HttpGet("Blog/Permissions")]
-        public async Task<IActionResult> GetBlogPermissions()
-        {
-            return Ok(await _roleService.GetBlogPermissions());
-        }
     }
 }

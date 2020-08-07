@@ -1,9 +1,9 @@
 ﻿using Newtonsoft.Json;
 using System.ComponentModel.DataAnnotations;
-using UniversityDemo.BaseEntities;
-using UniversityDemo.Enum;
+using UniversityDemo.Data.BaseEntities;
+using UniversityDemo.Data.Enum;
 
-namespace UniversityDemo.Models
+namespace UniversityDemo.Data.Models
 {
     public class Blog : BaseEntity
     {

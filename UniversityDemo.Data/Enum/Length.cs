@@ -1,4 +1,4 @@
-﻿namespace UniversityDemo.Enum
+﻿namespace UniversityDemo.Data.Enum
 {
     public enum Length
     {

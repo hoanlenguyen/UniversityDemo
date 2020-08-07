@@ -2,7 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using System.Threading.Tasks;
 using UniversityDemo.Controllers.BaseControllers;
-using UniversityDemo.Models;
+using UniversityDemo.Data.Models;
 using UniversityDemo.Models.Paging;
 using UniversityDemo.Services;
 

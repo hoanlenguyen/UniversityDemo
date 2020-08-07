@@ -1,9 +1,9 @@
 ﻿using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.ComponentModel;
-using UniversityDemo.BaseEntities;
+using UniversityDemo.Data.BaseEntities;
 
-namespace UniversityDemo.Models
+namespace UniversityDemo.Data.Models
 {
     public class Post : BaseEntity
     {

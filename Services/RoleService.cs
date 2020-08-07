@@ -10,9 +10,9 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using UniversityDemo.Authorization;
 using UniversityDemo.Data;
-using UniversityDemo.Enum;
 using UniversityDemo.Identity;
 using UniversityDemo.Models.DTO;
+using UniversityDemo.Permissions;
 
 namespace UniversityDemo.Services
 {
@@ -61,33 +61,7 @@ namespace UniversityDemo.Services
                 await _roleManager.AddClaimAsync(role, new Claim(CustomClaimTypes.Permission, permission));
             }
 
-            //Type type = typeof(Permissions.BlogPermissions);
-            //foreach (var p in type.GetProperties())
-            //{
-            //    var ojValue = p.GetValue(null, null);
-            //    var value = (string)ojValue;
-            //    await _roleManager.AddClaimAsync(role, new Claim(CustomClaimTypes.Permission, value));
-            //}
-
-
-
-
             return true;
-        }
-
-        public async Task<List<string>> GetBlogPermissions()
-        {
-            var permissions = new List<string>();
-            //Type type = typeof(BlogPermissions);
-            //foreach (var p in type.GetProperties())
-            //{
-            //    var ojValue = p.GetValue(null, null);
-            //    //var value = (string)ojValue;
-            //    var value = GetStaticFieldValues(ojValue);
-            //    permissions.Add(value);
-            //}
-            //permissions.Add(type.GetProperties().Length.ToString());
-            return permissions;
         }
 
         private static Dictionary<string, string> GetFieldValues(object obj)

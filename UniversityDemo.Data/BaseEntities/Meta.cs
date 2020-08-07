@@ -2,12 +2,11 @@
 using System;
 using System.ComponentModel;
 
-namespace UniversityDemo.BaseEntities
+namespace UniversityDemo.Data.BaseEntities
 {
     public class Meta
     {
-
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore,PropertyName = "createdAt")]
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore, PropertyName = "createdAt")]
         [DefaultValue(null)]
         public DateTime? CreatedAt { get; set; }
 

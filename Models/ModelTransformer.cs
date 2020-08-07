@@ -1,4 +1,5 @@
-﻿using UniversityDemo.Models.DTO;
+﻿using UniversityDemo.Data.Models;
+using UniversityDemo.Models.DTO;
 
 namespace UniversityDemo.Models
 {

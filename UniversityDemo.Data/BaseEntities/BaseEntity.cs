@@ -1,10 +1,8 @@
 ﻿using Newtonsoft.Json;
-using System;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
-namespace UniversityDemo.BaseEntities
+namespace UniversityDemo.Data.BaseEntities
 {
     public abstract class BaseEntity : IEntity<string>
     {
@@ -22,6 +20,5 @@ namespace UniversityDemo.BaseEntities
 
         [JsonProperty(PropertyName = "type")]
         public string Type { get; set; }
-        
     }
 }

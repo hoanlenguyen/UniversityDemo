@@ -1,4 +1,5 @@
-﻿using UniversityDemo.BaseEntities;
+﻿
+using UniversityDemo.Data.BaseEntities;
 
 namespace UniversityDemo.Repositories.BaseRepositories
 {

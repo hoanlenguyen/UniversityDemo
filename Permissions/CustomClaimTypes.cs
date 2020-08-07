@@ -1,4 +1,4 @@
-﻿namespace UniversityDemo.Enum
+﻿namespace UniversityDemo.Permissions
 {
     public class CustomClaimTypes
     {

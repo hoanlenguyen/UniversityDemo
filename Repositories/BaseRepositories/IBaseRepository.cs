@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using UniversityDemo.BaseEntities;
+using UniversityDemo.Data.BaseEntities;
 using UniversityDemo.Identity;
 
 namespace UniversityDemo.Repositories.BaseRepositories

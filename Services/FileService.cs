@@ -1,9 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
-using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
 using UniversityDemo.Models;
 
@@ -26,7 +24,7 @@ namespace UniversityDemo.Services
             return await GetFiles(request);
         }
 
-        static async Task<List<FileModel>> GetFiles(HttpRequest request)
+        private static async Task<List<FileModel>> GetFiles(HttpRequest request)
         {
             if (request.ContentType.Contains("application/json") || request.ContentType.Contains("text/plain"))
                 using (var reader = new StreamReader(request.Body))

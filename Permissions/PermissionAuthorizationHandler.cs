@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Identity;
 using System.Linq;
 using System.Threading.Tasks;
-using UniversityDemo.Enum;
 using UniversityDemo.Identity;
 
 namespace UniversityDemo.Permissions

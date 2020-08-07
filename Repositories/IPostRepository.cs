@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using UniversityDemo.Models;
+using UniversityDemo.Data.Models;
 using UniversityDemo.Models.Paging;
 using UniversityDemo.Repositories.BaseRepositories;
 
