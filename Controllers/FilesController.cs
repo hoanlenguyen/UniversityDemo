@@ -23,5 +23,11 @@ namespace UniversityDemo.Controllers
         {
             return Ok(await FileService.UploadAsync(fileForm));
         }
+
+        [HttpPost("request")]
+        public async Task<IActionResult> UploadByRequest()
+        {
+            return Ok(await FileService.UploadAsync(Request));
+        }
     }
 }

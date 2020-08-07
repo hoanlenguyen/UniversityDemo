@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using System;
+using System.ComponentModel;
 using System.IO;
 using System.Text.RegularExpressions;
 
@@ -7,8 +8,6 @@ namespace UniversityDemo.Models
 {
     public class FileModel
     {
-        //public IFormFile RawFile { get; set; }
-
         public string Data { get; set; }
 
         public string Filename { get; set; }
@@ -19,38 +18,41 @@ namespace UniversityDemo.Models
 
         public string Caption { get; set; }
 
+        [DefaultValue(true)]
+        public bool IsPublic { get; set; }
+
         [JsonIgnore]
         public byte[] FileBytes { get; set; }
 
         public int ResourceId { get; set; }
 
-        public string GetBase64()
-        {
-            if (string.IsNullOrWhiteSpace(Data))
-                return null;
-            var index = Data.LastIndexOf("base64", StringComparison.Ordinal);
-            if (index == -1)
-                return Data;
-            return Data.Substring(index + 7);
-        }
+        //public string GetBase64()
+        //{
+        //    if (string.IsNullOrWhiteSpace(Data))
+        //        return null;
+        //    var index = Data.LastIndexOf("base64", StringComparison.Ordinal);
+        //    if (index == -1)
+        //        return Data;
+        //    return Data.Substring(index + 7);
+        //}
 
-        public byte[] GetByteArray()
-        {
-            try
-            {
-                if (FileBytes != null)
-                    return FileBytes;
+        //public byte[] GetByteArray()
+        //{
+        //    try
+        //    {
+        //        if (FileBytes != null)
+        //            return FileBytes;
 
-                var base64 = GetBase64();
-                if (string.IsNullOrWhiteSpace(base64))
-                    return null;
-                return Convert.FromBase64String(base64);
-            }
-            catch
-            {
-                return null;
-            }
-        }
+        //        var base64 = GetBase64();
+        //        if (string.IsNullOrWhiteSpace(base64))
+        //            return null;
+        //        return Convert.FromBase64String(base64);
+        //    }
+        //    catch
+        //    {
+        //        return null;
+        //    }
+        //}
 
         //public string GetResourceName()
         //{
