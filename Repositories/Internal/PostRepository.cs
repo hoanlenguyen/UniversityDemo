@@ -34,9 +34,9 @@ namespace UniversityDemo.Repositories.Internal
             return true;
         }
 
-        public async Task<List<Post>> GetAllAsync(int? maxResultCount = null)
+        public async Task<List<Post>> GetAllAsync(int? maxResultCount = null, string orderBy = null, bool isOrderAsc = true)
         {
-            return await QueryAll(maxResultCount);
+            return await QueryAll(maxResultCount, orderBy, isOrderAsc);
         }
 
         public async Task<Post> FindOneByIdAsync(string id)

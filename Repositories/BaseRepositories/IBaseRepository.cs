@@ -7,7 +7,7 @@ namespace UniversityDemo.Repositories.BaseRepositories
 {
     public interface IBaseRepository<T> where T : BaseEntity
     {
-        Task<List<T>> GetAllAsync(int? maxResultCount = null);
+        Task<List<T>> GetAllAsync(int? maxResultCount = null, string orderBy = null, bool isOrderAsc = true);
 
         Task<T> FindOneByIdAsync(string id);
 

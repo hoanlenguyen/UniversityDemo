@@ -46,9 +46,13 @@ namespace UniversityDemo.Controllers
             return Ok();
         }
 
-        //[Authorize(Roles = RoleNames.Admin)]
-        //[Authorize(RequiredPermissions.Blogs.View)]
-        [Authorize(RequiredPermissions.Accounts.View)]
+        [HttpPost("changepasword")]
+        public async Task<IActionResult> ChangePassword(string userName, string password)
+        {
+            return Ok(await _accountsService.ChangePassword(userName, password));
+        }
+
+        [Authorize]
         [HttpGet("current/userinfo")]
         public async Task<IActionResult> GetUserInfo()
         {

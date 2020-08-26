@@ -21,7 +21,7 @@ namespace UniversityDemo.Repositories.Internal
         private static QueryDefinition<Blog> IndexingDefinition =>
         QueryDefinition<Blog>.Select
             .Field(b => b.Id)
-            .Field(b => b.Url);
+            .Field(b => b.Name);
 
         public BlogRepository(CosmosDbContext cosmosDb) : base(cosmosDb.Container, nameof(Blog))
         {
@@ -33,9 +33,9 @@ namespace UniversityDemo.Repositories.Internal
             return true;
         }
 
-        public async Task<List<Blog>> GetAllAsync(int? maxResultCount = null)
+        public async Task<List<Blog>> GetAllAsync(int? maxResultCount = null, string orderBy = null, bool isOrderAsc = true)
         {
-            return await QueryAll(maxResultCount);
+            return await QueryAll(maxResultCount, orderBy, isOrderAsc);
         }
 
         public async Task<Blog> FindOneByIdAsync(string id)

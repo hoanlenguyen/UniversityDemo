@@ -49,9 +49,9 @@ namespace UniversityDemo.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllAsync(int? maxResultCount = null)
+        public async Task<IActionResult> GetAllAsync(int? maxResultCount = null, string orderBy = null, bool isOrderAsc = true)
         {
-            return Ok(await postService.GetAllAsync(maxResultCount));
+            return Ok(await postService.GetAllAsync(maxResultCount, orderBy, isOrderAsc));
         }
 
         [HttpPost("paging")]

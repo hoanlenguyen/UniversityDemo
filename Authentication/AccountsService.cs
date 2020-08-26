@@ -136,6 +136,19 @@ namespace UniversityDemo.Authentication
             return roles;
         }
 
+        public async Task<bool> ChangePassword(string userName, string password)
+        {
+            var user = await _userManager.FindByNameAsync(userName);
+            if (user != null)
+            {
+                var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+                var result = await _userManager.ResetPasswordAsync(user, token, password);
+                if (result.Succeeded)
+                    return true;
+            }
+            return false;
+        }
+
         private string GenerateJSONWebToken(ApplicationUser user)
         {
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_options.SecretKey));
@@ -144,19 +157,19 @@ namespace UniversityDemo.Authentication
 
             var claims = new List<Claim>
             {
-                new Claim(JwtRegisteredClaimNames.Sub, user.Id),
-                new Claim(JwtRegisteredClaimNames.Sid, user.UserName),
+                new Claim(ClaimTypes.NameIdentifier, user.Id),
+                new Claim(ClaimTypes.Name, user.UserName),
                 new Claim(JwtRegisteredClaimNames.Email, user.Email),
                 new Claim(JwtRegisteredClaimNames.AuthTime,DateTime.UtcNow.ToUniversalTime().ToString()),
-                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                //new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
             };
             claims.AddRange(roles.Select(role => new Claim(ClaimsIdentity.DefaultRoleClaimType, role)));
-            //ClaimsIdentity claimsIdentity = new ClaimsIdentity(claims, "Token");
-            //claimsIdentity.AddClaims(userInfo.Roles.Select(role => new Claim(ClaimTypes.Role, role)));
 
             var token = new JwtSecurityToken(
-              _options.Issuer,
-              _options.Audience,
+              //_options.Issuer,
+              //_options.Audience,
+              null,
+              null,
               claims,
               expires: DateTime.UtcNow.AddMinutes(120),
               signingCredentials: credentials);

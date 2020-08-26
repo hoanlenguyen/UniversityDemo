@@ -1,8 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using System.Threading.Tasks;
 using UniversityDemo.Controllers.BaseControllers;
 using UniversityDemo.Data.Models;
+using UniversityDemo.Extensions;
 using UniversityDemo.Models.Paging;
 using UniversityDemo.Services;
 
@@ -52,9 +54,9 @@ namespace UniversityDemo.Controllers
 
         //[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpGet]
-        public async Task<IActionResult> GetAllAsync(int? maxResultCount = null)
+        public async Task<IActionResult> GetAllAsync(int? maxResultCount = null, string orderBy = null, bool isOrderAsc = true)
         {
-            return Ok(await blogService.GetAllAsync(maxResultCount));
+            return Ok(await blogService.GetAllAsync(maxResultCount, "url", isOrderAsc));
         }
 
         [HttpGet("indexing")]
