@@ -163,5 +163,20 @@ namespace UniversityDemo.Authentication
 
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
+
+        public async Task<bool> ChangePassword(string userName, string password)
+        {
+            var user = await _userManager.FindByNameAsync(userName);
+
+            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+
+            var result = await _userManager.ResetPasswordAsync(user, token, password);
+
+            if (!result.Succeeded)
+            {
+                throw new Exception();
+            }
+            return true;
+        }
     }
 }
