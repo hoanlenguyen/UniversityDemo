@@ -27,7 +27,7 @@ namespace UniversityDemo.Repositories.Internal
         {
         }
 
-        public async Task<bool> DeleteAsync(UserInfo user, params string[] ids)
+        public async Task<bool> DeleteAsync(IUserInfo user, params string[] ids)
         {
             await DeleteItemAsync(user, ids);
             return true;
@@ -48,12 +48,12 @@ namespace UniversityDemo.Repositories.Internal
             return await QueryFindItemsByIds(ids);
         }
 
-        public async Task<Blog> InsertAsync(UserInfo user, Blog item)
+        public async Task<Blog> InsertAsync(IUserInfo user, Blog item)
         {
             return await InsertItemAsync(user, item);
         }
 
-        public async Task<Blog> UpdateAsync(UserInfo user, Blog item)
+        public async Task<Blog> UpdateAsync(IUserInfo user, Blog item)
         {
             return await UpdateItemAsync(user, item);
         }

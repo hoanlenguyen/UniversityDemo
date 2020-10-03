@@ -23,7 +23,7 @@ namespace UniversityDemo.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateAsync(Blog blog)
         {
-            return Ok(await blogService.CreateAsync(GetUserInfo(User), blog));
+            return Ok(await blogService.CreateAsync(UserInfo, blog));
         }
 
         [HttpGet("{id}")]
@@ -41,13 +41,13 @@ namespace UniversityDemo.Controllers
         [HttpPut]
         public async Task<IActionResult> UpdateAsync(Blog blog)
         {
-            return Ok(await blogService.UpdateAsync(GetUserInfo(User), blog));
+            return Ok(await blogService.UpdateAsync(UserInfo, blog));
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteAsync(string id)
         {
-            return Ok(await blogService.DeleteAsync(GetUserInfo(User), id));
+            return Ok(await blogService.DeleteAsync(UserInfo, id));
         }
 
         //[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
@@ -70,7 +70,7 @@ namespace UniversityDemo.Controllers
         }
 
         [HttpPost("paging")]
-        public async Task<IActionResult> PageIndexingItemsAsync([FromForm]PagingRequest request)
+        public async Task<IActionResult> PageIndexingItemsAsync([FromForm] PagingRequest request)
         {
             return Ok(await blogService.PageIndexingItemsAsync(request));
         }

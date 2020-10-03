@@ -37,7 +37,7 @@ namespace UniversityDemo.Authentication
             _options = optionsAccessor.Value;
         }
 
-        public async Task<JsonResult> Register([FromForm]RegisterCredentials input)
+        public async Task<JsonResult> Register([FromForm] RegisterCredentials input)
         {
             var user = new ApplicationUser(input.UserName, input.Email);
             var result = await _userManager.CreateAsync(user, input.Password);
@@ -56,7 +56,7 @@ namespace UniversityDemo.Authentication
             return new JsonResult(false);
         }
 
-        public async Task<JsonResult> Login([FromForm]LoginCredentials input)
+        public async Task<JsonResult> Login([FromForm] LoginCredentials input)
         {
             var result = await _signInManager.PasswordSignInAsync(input.UserName, input.Password, false, false);
             if (result.Succeeded)
@@ -71,7 +71,7 @@ namespace UniversityDemo.Authentication
                         { "userName", userInfo.UserName },
                         { "email", userInfo.Email },
                         { "roles", roles },
-                        { "accessToken", GenerateJSONWebToken(user) },
+                        { "accessToken", $"Bearer {GenerateJSONWebToken(user)}" },
                     });
             }
             return new JsonResult("Unable to sign in") { StatusCode = 401 };
@@ -145,7 +145,7 @@ namespace UniversityDemo.Authentication
             var claims = new List<Claim>
             {
                 new Claim(JwtRegisteredClaimNames.Sub, user.Id),
-                new Claim(JwtRegisteredClaimNames.Sid, user.UserName),
+                new Claim(ClaimTypes.Name, user.UserName),
                 new Claim(JwtRegisteredClaimNames.Email, user.Email),
                 new Claim(JwtRegisteredClaimNames.AuthTime,DateTime.UtcNow.ToUniversalTime().ToString()),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),

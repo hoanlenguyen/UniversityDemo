@@ -18,7 +18,7 @@ namespace UniversityDemo.Controllers
         private FileService FileService { get; }
 
         [HttpPost]
-        public async Task<IActionResult> Upload([FromForm]FileForm fileForm)
+        public async Task<IActionResult> Upload([FromForm] FileForm fileForm)
         {
             return Ok(await FileService.UploadAsync(fileForm));
         }

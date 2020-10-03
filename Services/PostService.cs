@@ -19,7 +19,7 @@ namespace UniversityDemo.Services
             this.postRepository = postRepository;
         }
 
-        public async Task<Post> CreateAsync(UserInfo user, Post post)
+        public async Task<Post> CreateAsync(IUserInfo user, Post post)
         {
             return await postRepository.InsertAsync(user, post);
         }
@@ -34,12 +34,12 @@ namespace UniversityDemo.Services
             return await postRepository.FindByIdsAsync(ids);
         }
 
-        public async Task<Post> UpdateAsync(UserInfo user, Post post)
+        public async Task<Post> UpdateAsync(IUserInfo user, Post post)
         {
             return await postRepository.UpdateAsync(user, post);
         }
 
-        public async Task<bool> DeleteAsync(UserInfo user, string id)
+        public async Task<bool> DeleteAsync(IUserInfo user, string id)
         {
             return await postRepository.DeleteAsync(user, id);
         }

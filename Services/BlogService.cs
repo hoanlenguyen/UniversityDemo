@@ -21,7 +21,7 @@ namespace UniversityDemo.Services
             this.postService = postService;
         }
 
-        public async Task<Blog> CreateAsync(UserInfo user, Blog item)
+        public async Task<Blog> CreateAsync(IUserInfo user, Blog item)
         {
             return await blogRepository.InsertAsync(user, item);
         }
@@ -36,12 +36,12 @@ namespace UniversityDemo.Services
             return await blogRepository.FindByIdsAsync(ids);
         }
 
-        public async Task<Blog> UpdateAsync(UserInfo user, Blog item)
+        public async Task<Blog> UpdateAsync(IUserInfo user, Blog item)
         {
             return await blogRepository.UpdateAsync(user, item);
         }
 
-        public async Task<bool> DeleteAsync(UserInfo user, string id)
+        public async Task<bool> DeleteAsync(IUserInfo user, string id)
         {
             return await blogRepository.DeleteAsync(user, id);
         }

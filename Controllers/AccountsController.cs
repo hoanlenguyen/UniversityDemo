@@ -1,10 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using UniversityDemo.Authentication;
 using UniversityDemo.Controllers.BaseControllers;
-using UniversityDemo.Permissions;
 
 namespace UniversityDemo.Controllers
 {
@@ -20,7 +18,7 @@ namespace UniversityDemo.Controllers
         }
 
         [HttpPost("Register")]
-        public async Task<IActionResult> Register([FromBody]RegisterCredentials credentials)
+        public async Task<IActionResult> Register([FromBody] RegisterCredentials credentials)
         {
             if (ModelState.IsValid)
             {
@@ -30,7 +28,7 @@ namespace UniversityDemo.Controllers
         }
 
         [HttpPost("Login")]
-        public async Task<IActionResult> Login([FromBody]LoginCredentials credentials)
+        public async Task<IActionResult> Login([FromBody] LoginCredentials credentials)
         {
             if (ModelState.IsValid)
             {
@@ -48,19 +46,21 @@ namespace UniversityDemo.Controllers
 
         //[Authorize(Roles = RoleNames.Admin)]
         //[Authorize(RequiredPermissions.Blogs.View)]
-        [Authorize(RequiredPermissions.Accounts.View)]
+        //[Authorize(RequiredPermissions.Accounts.View)]
+        [Authorize]
         [HttpGet("current/userinfo")]
         public async Task<IActionResult> GetUserInfo()
         {
             //var accessToken = HttpContext.Request.Headers["Authorization"];
-            var user = base.GetUserInfo(User);
-            return new JsonResult(
-                    new Dictionary<string, object>
-                    {
-                        { "userId",user.Id },
-                        { "userName", user.UserName},
-                        { "email", user.Email }
-                    });
+            //var user = base.GetUserInfo(User);
+            //return new JsonResult(
+            //        new Dictionary<string, object>
+            //        {
+            //            { "userId",user.Id },
+            //            { "userName", user.UserName},
+            //            { "email", user.Email }
+            //        });
+            return Ok(UserInfo);
         }
 
         [HttpPost("{userId}/Assign/Roles")]

@@ -6,15 +6,16 @@ namespace UniversityDemo.Controllers.BaseControllers
 {
     public class BaseApiController : ControllerBase
     {
-        //protected IUserInfo UserInfo { get; }
-        protected UserInfo GetUserInfo(ClaimsPrincipal user)
+        protected IUserInfo UserInfo => GetUserInfo(User);
+
+        private UserInfo GetUserInfo(ClaimsPrincipal claims)
         {
-            return user != null ?
+            return claims != null ?
                 new UserInfo
                 {
-                    Id = User.FindFirstValue(ClaimTypes.NameIdentifier),
-                    UserName = User.Identity.Name ?? User.FindFirstValue(ClaimTypes.Name),
-                    Email= User.FindFirstValue(ClaimTypes.Email)
+                    Id = claims.FindFirstValue(ClaimTypes.NameIdentifier),
+                    UserName = claims.Identity.Name ?? claims.FindFirstValue(ClaimTypes.Name),
+                    Email = claims.FindFirstValue(ClaimTypes.Email)
                 }
                 : new UserInfo();
         }

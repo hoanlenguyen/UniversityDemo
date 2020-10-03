@@ -13,10 +13,10 @@ namespace UniversityDemo.Repositories.BaseRepositories
 
         Task<List<T>> FindByIdsAsync(params string[] ids);
 
-        Task<bool> DeleteAsync(UserInfo user, params string[] ids);
+        Task<bool> DeleteAsync(IUserInfo user, params string[] ids);
 
-        Task<T> InsertAsync(UserInfo user, T item);
+        Task<T> InsertAsync(IUserInfo user, T item);
 
-        Task<T> UpdateAsync(UserInfo user, T item);
+        Task<T> UpdateAsync(IUserInfo user, T item);
     }
 }

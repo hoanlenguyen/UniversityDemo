@@ -21,7 +21,7 @@ namespace UniversityDemo.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateAsync(Post item)
         {
-            return Ok(await postService.CreateAsync(GetUserInfo(User), item));
+            return Ok(await postService.CreateAsync(UserInfo, item));
         }
 
         [HttpGet("{id}")]
@@ -39,13 +39,13 @@ namespace UniversityDemo.Controllers
         [HttpPut]
         public async Task<IActionResult> UpdateAsync(Post item)
         {
-            return Ok(await postService.UpdateAsync(GetUserInfo(User), item));
+            return Ok(await postService.UpdateAsync(UserInfo, item));
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteAsync(string id)
         {
-            return Ok(await postService.DeleteAsync(GetUserInfo(User), id));
+            return Ok(await postService.DeleteAsync(UserInfo, id));
         }
 
         [HttpGet]
@@ -55,7 +55,7 @@ namespace UniversityDemo.Controllers
         }
 
         [HttpPost("paging")]
-        public async Task<IActionResult> PageIndexingItemsAsync([FromForm]PagingRequest request)
+        public async Task<IActionResult> PageIndexingItemsAsync([FromForm] PagingRequest request)
         {
             return Ok(await postService.PageIndexingItemsAsync(request));
         }

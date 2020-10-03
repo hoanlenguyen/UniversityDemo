@@ -26,9 +26,11 @@ namespace UniversityDemo.Identity
         public ApplicationRole()
         {
         }
+
         public ApplicationRole(string roleName) : base(roleName)
         {
         }
+
         public virtual ICollection<ApplicationUserRole> UserRoles { get; set; }
         public virtual ICollection<ApplicationRoleClaim> RoleClaims { get; set; }
     }

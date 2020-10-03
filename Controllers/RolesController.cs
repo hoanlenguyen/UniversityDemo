@@ -37,6 +37,5 @@ namespace UniversityDemo.Controllers
         {
             return Ok(await _roleService.AssignPermissionsToRoleAsync(roleName, permissions));
         }
-
     }
 }

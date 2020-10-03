@@ -27,7 +27,7 @@ namespace UniversityDemo
             Env = env;
         }
 
-        public IConfiguration Configuration { get; }
+        private IConfiguration Configuration { get; }
 
         private IWebHostEnvironment Env { get; }
 
@@ -56,23 +56,12 @@ namespace UniversityDemo
                 .AddDefaultTokenProviders()
                 .AddEntityFrameworkStores<DemoDbContext>();
 
-            //services.AddCors(opts =>
-            //{
-            //    //opts.AddPolicy("AllowAllOrigins",
-            //    //builder =>
-            //    //{
-            //    //    builder.AllowAnyOrigin()
-            //    //    .AllowAnyMethod()
-            //    //    .AllowCredentials();
-
-            //    //});
-            //});
-
             services.AddHttpContextAccessor();
+
+            services.AddScoped<IUserInfo, UserInfo>();
 
             services.Configure<JWTSettings>(Configuration.GetSection(nameof(JWTSettings)));
 
-            //services.AddAuthentication("Basic");
             //https://www.zehntec.com/blog/permission-based-authorization-in-asp-net-core/
             //https://stackoverflow.com/questions/46938248/asp-net-core-2-0-combining-cookies-and-bearer-authorization-for-the-same-endpoin/46942760#46942760
 

@@ -141,7 +141,7 @@ namespace UniversityDemo.Repositories.BaseRepositories
             return result;
         }
 
-        public async Task<T> UpdateItemAsync(UserInfo user, T item)
+        public async Task<T> UpdateItemAsync(IUserInfo user, T item)
         {
             item.Meta.UpdatedAt = DateTime.UtcNow;
             item.Meta.UpdatedBy = user.Id;
@@ -149,7 +149,7 @@ namespace UniversityDemo.Repositories.BaseRepositories
             return await QueryFindOneById(item.Id);
         }
 
-        public async Task<T> InsertItemAsync(UserInfo user, T item)
+        public async Task<T> InsertItemAsync(IUserInfo user, T item)
         {
             item.Id = Guid.NewGuid().ToString();
             item.Meta.CreatedAt = DateTime.UtcNow;
@@ -159,7 +159,7 @@ namespace UniversityDemo.Repositories.BaseRepositories
             return await QueryFindOneById(entity.Resource.Id);
         }
 
-        public async Task DeleteItemAsync(UserInfo user, string id)
+        public async Task DeleteItemAsync(IUserInfo user, string id)
         {
             var item = await QueryFindOneById(id);
             if (item == null)
@@ -170,7 +170,7 @@ namespace UniversityDemo.Repositories.BaseRepositories
             await DefaultContainer.UpsertItemAsync<T>(item, _requestOptions.PartitionKey);
         }
 
-        public async Task DeleteItemAsync(UserInfo user, params string[] ids)
+        public async Task DeleteItemAsync(IUserInfo user, params string[] ids)
         {
             foreach (var id in ids)
             {

@@ -28,7 +28,7 @@ namespace UniversityDemo.Repositories.Internal
             .Field(q => q.BlogId)
             .Field(q => q.Views);
 
-        public async Task<bool> DeleteAsync(UserInfo user, params string[] ids)
+        public async Task<bool> DeleteAsync(IUserInfo user, params string[] ids)
         {
             await DeleteItemAsync(user, ids);
             return true;
@@ -49,12 +49,12 @@ namespace UniversityDemo.Repositories.Internal
             return await QueryFindItemsByIds(ids);
         }
 
-        public async Task<Post> InsertAsync(UserInfo user, Post item)
+        public async Task<Post> InsertAsync(IUserInfo user, Post item)
         {
             return await InsertItemAsync(user, item);
         }
 
-        public async Task<Post> UpdateAsync(UserInfo user, Post item)
+        public async Task<Post> UpdateAsync(IUserInfo user, Post item)
         {
             return await UpdateItemAsync(user, item);
         }

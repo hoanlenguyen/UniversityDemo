@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace UniversityDemo.Authentication
+﻿namespace UniversityDemo.Authentication
 {
     public class AuthRepository
     {
