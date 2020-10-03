@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using UniversityDemo.Data.BaseEntities;
+using UniversityDemo.Extensions;
 using UniversityDemo.Identity;
 
 namespace UniversityDemo.Repositories.BaseRepositories
@@ -42,7 +43,20 @@ namespace UniversityDemo.Repositories.BaseRepositories
 
         protected virtual string DefaultFilterSql()
         {
-            return $" ( c.meta.isDeleted=false OR (NOT IS_DEFINED(c.meta.isDeleted))) ";
+            return $" ( c.meta.isDeleted = false OR (NOT IS_DEFINED(c.meta.isDeleted))) ";
+        }
+
+        protected virtual string OrderBySql(string field = null, bool isASC=true)
+        {
+            if (string.IsNullOrEmpty(field))
+                return null;
+
+            return $"ORDER BY c.{field} {GetOrderRule(isASC)}";
+        }
+
+        private string GetOrderRule(bool isASC = true)
+        {
+            return isASC ? " ASC" : " DESC";
         }
         
         protected virtual string AddPaginationSql(int skipPages = 0, int take = 10)
@@ -71,9 +85,12 @@ namespace UniversityDemo.Repositories.BaseRepositories
             return $"{DefaultSql()}{DefaultFilterSql()} AND c.id IN {arrStr}";
         }
 
-        protected virtual string BuildSelectAllQuery(int? maxResultCount = null)
+        protected virtual string BuildSelectAllQuery(int? maxResultCount = null, string orderBy = null, bool isOrderAsc = true)
         {
-            return $"{DefaultSql(maxResultCount)}{DefaultFilterSql()} ";
+            return $"{DefaultSql(maxResultCount)} {DefaultFilterSql()} " 
+                //+ $"{OrderBySql(orderBy, isOrderAsc)}"
+                + $"{OrderBySql(orderBy, isOrderAsc)}"
+                ;
         }
 
         protected FeedIterator<T> BuildDocumentQuery(string queryString)
@@ -81,9 +98,9 @@ namespace UniversityDemo.Repositories.BaseRepositories
             return this.DefaultContainer.GetItemQueryIterator<T>(new QueryDefinition(queryString), null, _requestOptions);
         }
 
-        protected async Task<List<T>> QueryAll(int? maxResultCount = null)
+        protected async Task<List<T>> QueryAll(int? maxResultCount = null, string orderBy = null, bool isOrderAsc = true)
         {
-            var queryStr = BuildSelectAllQuery(maxResultCount);
+            var queryStr = BuildSelectAllQuery(maxResultCount, orderBy, isOrderAsc);
             var query = BuildDocumentQuery(queryStr);
             var results = new List<T>();
             while (query.HasMoreResults)

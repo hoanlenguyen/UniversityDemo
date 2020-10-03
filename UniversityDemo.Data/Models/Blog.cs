@@ -7,8 +7,8 @@ namespace UniversityDemo.Data.Models
 {
     public class Blog : BaseEntity
     {
-        [JsonProperty(PropertyName = "url")]
-        [MaxLength((int)Length.Url)]
-        public string Url { get; set; }
+        [JsonProperty(PropertyName = nameof(Name))]
+        [MaxLength(Limitation.Name)]
+        public string Name { get; set; }
     }
 }

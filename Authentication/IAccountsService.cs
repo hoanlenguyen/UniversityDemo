@@ -12,6 +12,8 @@ namespace UniversityDemo.Authentication
 
         Task Logout();
 
+        Task<bool> ChangePassword(string userName, string password);
+
         Task<bool> CreateRoleAsync(string roleName);
 
         Task<List<string>> GetUserRolesByUserId(string userId);

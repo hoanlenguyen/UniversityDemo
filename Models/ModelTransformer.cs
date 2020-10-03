@@ -10,7 +10,7 @@ namespace UniversityDemo.Models
             return new BlogIndexingModel
             {
                 Id = entity.Id,
-                Url = entity.Url
+                Url = entity.Name
             };
         }
 
